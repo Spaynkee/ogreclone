@@ -67,7 +67,7 @@ class Unit():
     def can_any_character_take_action_in_battle(self, round_number):
         for pos, char in self.unit_chars.items():
             if char is not None:
-                if char.num_actions(pos) >= round_number and char.is_dead == False:
+                if char.get_num_actions() >= round_number and char.is_dead == False:
                     if char.status == None:
                         return True
 
@@ -76,7 +76,8 @@ class Unit():
     def can_any_character_take_action_in_round(self, round_number):
         for pos, char in self.unit_chars.items():
             if char is not None:
-                if char.num_actions(pos) > round_number and char.has_performed_action_this_round == False:
+                if char.get_num_actions() > round_number and \
+                        char.has_performed_action_this_round == False:
                     if char.status is None and char.is_dead == False:
                         return True
 
