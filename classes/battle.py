@@ -3,7 +3,6 @@
 This object represents a single battle between two units.
 
 """
-from .character_battle import CharacterBattle
 class Battle():
     # current_round?
     # max_rounds?

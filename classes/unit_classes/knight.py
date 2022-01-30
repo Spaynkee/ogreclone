@@ -3,7 +3,7 @@
 contains all the info for the knight class.
 
 """
-from .slash_action import SlashAction
+from ..actions.slash_action import SlashAction
 class KnightClass():
 
     #
