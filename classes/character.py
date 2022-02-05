@@ -17,7 +17,7 @@ class Character():
             strength (int): The strength of this character. Can determine char damage.
             base_position (int): The position in the unit that this unit is placed in.
             current_position (int): The current position this char is in. Can change during battle.
-            is_dead (bool): Is this character dead?
+            is_alive (bool): Is this character alive?
             has_performed_action_this_round (bool): Has this char taken an action in a given round.
             status (?): What status the character has.
             char_class (obj): What class the character is. (knight, berserker, mage, etc)
@@ -44,7 +44,7 @@ class Character():
         self.strength = strength
         self.base_position = 0
         self.current_position = 0
-        self.is_dead = False
+        self.is_alive = True
         self.has_performed_action_this_round = False
         self.status = None # what var type should this be? I think string is probably fine?
         self.char_class = char_class
@@ -88,6 +88,11 @@ class Character():
 
     def determine_target(self, unit, action) -> object:
         """ Get the target of this characters action given the enemy unit and the action to take.
+
+            Args:
+                unit:
+                action:
+                
 
             Returns:
                 the enemy character we are to take an action against.
