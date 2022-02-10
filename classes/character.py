@@ -90,9 +90,9 @@ class Character():
         """ Get the target of this characters action given the enemy unit and the action to take.
 
             Args:
-                unit:
-                action:
-                
+                unit (Unit):
+                action (Action):
+
 
             Returns:
                 the enemy character we are to take an action against.
@@ -105,11 +105,16 @@ class Character():
 
             Implement this
                 if our charcter is on one side, get chars for that side and the middle.
-                if none, get chars from the third row
+                if not, get chars from the opposite
 
                 if our char is in the middle, get a list of all chars.
 
                 if action.targets_front:
 
+                0,3,6 and 2,5,8 are sides. 1,4,6 are middle?
+                self.current_position exists, so we can use that to get our sides.
+
         """
+        print(action)
+        print(self.current_position)
         return unit.get_first_non_dead_char_in_unit()
