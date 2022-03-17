@@ -19,7 +19,7 @@ jobs:
           pip install -r requirements.txt
       - name: Lint with pylint
         run: |
-          pylint .
+          pylint classes/
       - name: Test with unittest
         run: |
           echo "And this is where I would put tests, if I had any"
