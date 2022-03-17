@@ -30,7 +30,10 @@ class Character():
     """
 
     def __str__(self):
-        return f"{self.char_name}\nMax HP: {self.health}\nAgi: {self.agility}\n"
+        return f"{self.char_name}\n\
+Max HP: {self.max_health}\n\
+Current HP: {self.health}\n\
+Agi: {self.agility}\n"
 
     #pylint: disable=too-many-arguments # this is fine.
     def __init__(self, name: str, char_class, char_id: int, health: int = 0,\
@@ -86,35 +89,88 @@ class Character():
 
         return self.char_class.num_actions[row]
 
-    def determine_target(self, unit, action) -> object:
+    def determine_target(self, enemy_unit, targeting_mode) -> object:
         """ Get the target of this characters action given the enemy unit and the action to take.
 
             Args:
-                unit (Unit):
-                action (Action):
-
+                enemy_unit (Unit): The enemy unit we're determing target from.
+                action (Action): The action this character will take.
 
             Returns:
                 the enemy character we are to take an action against.
+        """
+
+        # there is an issue where units can target chars in the back. even if they're melee.
+        # we have to add something that says if there's a front unit in a column, don't even think
+        # about having another unit in targets. so one target per col, as actions target either
+        # the front or the back, and can only hit one of the two of these.
+
+        targets = []
+
+        # always include the middle row as targets.
+        targets = self.add_enemies_to_targets((1, 4, 7), targets, enemy_unit)
+
+        # if our character is on the right side of their unit
+        if self.current_position in (0, 3, 6):
+            targets = self.add_enemies_to_targets((2, 5, 8), targets, enemy_unit)
+
+            # if we don't have any targets in the middle or on the left side, we include right side.
+            if len(targets) == 0:
+                targets = self.add_enemies_to_targets((0, 3, 6), targets, enemy_unit)
+
+        # if our character is on the left side of their unit
+        if self.current_position in (2, 5, 8):
+            # we have to get all chars from the right side of enemy_unit
+            targets = self.add_enemies_to_targets((0, 3, 6), targets, enemy_unit)
+
+            # if we don't have any targets in the middle or on enemy_units opposite side.
+            if len(targets) == 0:
+                targets = self.add_enemies_to_targets((2, 5, 8), targets, enemy_unit)
+                # we get the left side.
+
+        if targeting_mode == "Leader":
+            # return the enemy units leader, if it is in targets. otherwise, auto.
+            if enemy_unit.unit_leader in targets:
+                return enemy_unit.unit_leader
+
+            targeting_mode = "Auto"
+
+        if targeting_mode == "Strong":
+            targets.sort(key=lambda x: x.health, reverse=True)
+            return targets[0]
+
+        if targeting_mode == "Weak":
+            targets.sort(key=lambda x: x.health, reverse=False)
+            return targets[0]
+
+        if targeting_mode == "Auto":
+            # this will eventually be based on a chars right, left, and middle attack scores?
+            # not really sure how those are calc'd.
+            return enemy_unit.get_first_non_dead_char_in_unit()
+
+        return enemy_unit.get_first_non_dead_char_in_unit()
+
+    @staticmethod
+    def add_enemies_to_targets(pos_list, targets, enemy_unit):
+        """ This function adds valid characters from an enemy unit to the list of potential targets
+            for a character.
+            Args:
+                pos_tuple (List[int]):
+                targets (list[Character]): A list of characters that can be targeted.
+                enemy_unit (Unit): The opposing unit that we're getting targets from.
+
+            Returns:
+                A list of potential targets for a characters action.
 
             TODO:
-                Currently this function selects the first non-dead unit.
-                It should first use our action to determine possible targets
-                then it should check the targetting mode (auto, weakest, strongest, etc)
-                to determine who to swing against.
-
-            Implement this
-                if our charcter is on one side, get chars for that side and the middle.
-                if not, get chars from the opposite
-
-                if our char is in the middle, get a list of all chars.
-
-                if action.targets_front:
-
-                0,3,6 and 2,5,8 are sides. 1,4,6 are middle?
-                self.current_position exists, so we can use that to get our sides.
-
+                This will eventually need to handle attacks that prioritize the back row.
+                So I think it will have to return all potential targets, and we figure out how
+                to select one of those when we go to determine_target
         """
-        print(action)
-        print(self.current_position)
-        return unit.get_first_non_dead_char_in_unit()
+        for pos in pos_list:
+            enemy_char = enemy_unit.unit_chars[pos]
+            if enemy_char is not None and enemy_char.is_alive:
+                targets.append(enemy_char)
+                return targets
+
+        return targets
