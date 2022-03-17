@@ -24,6 +24,7 @@ def main():
 
     pol_unit = Unit(pol_char, unit_id=1)
     dio_unit = Unit(dio_char, unit_id=2)
+    units = {pol_unit.unit_id: pol_unit, dio_unit.unit_id: dio_unit}
 
     print("\nadding chars to unit")
     pol_unit.add_char_to_unit(fast_char, 3)
@@ -36,10 +37,18 @@ def main():
         if choice == "1":
             # print char by id. We don't have a dict of Characters to index for this right now.
             pass
-
         elif choice == "2":
-            start_battle(pol_unit, dio_unit)
+            print("Which unit id?")
+            unit_id = int(input())
+
+            if unit_id not in units:
+                print("Unit id does not exist")
+
+            units[unit_id].print_unit_map()
+
         elif choice == "3":
+            start_battle(pol_unit, dio_unit)
+        elif choice == "4":
             sys.exit()
 
 def start_battle(unit_one: Unit, unit_two: Unit):
@@ -144,7 +153,7 @@ def determine_turn_order(unit, unit_row):
 
     for col in range(0,3):
         char = unit.unit_chars[unit_row*3+col]
-        if char is not None and char.is_dead is False:
+        if char is not None and char.is_alive is True:
             char_order.append(char)
         else:
             continue
@@ -158,8 +167,9 @@ def display_menu():
 
     """
     print("1. Print character by id")
-    print("2. Run a battle")
-    print("3. Exit")
+    print("2. Print unit map by id")
+    print("3. Run a battle")
+    print("4. Exit")
 
 
 if __name__ == "__main__":
