@@ -7,7 +7,7 @@ import sys
 from classes.game import Game
 from classes.unit import Unit
 from classes.battle import Battle
-from classes.unit_classes.knight import KnightClass
+from classes.unit_classes.knight import KnightClass 
 
 def main():
     """ The main function of our program. Creates a couple characters, adds them to a couple units,

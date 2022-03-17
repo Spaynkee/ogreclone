@@ -19,6 +19,7 @@ jobs:
       - name: Lint with pylint
         run: |
           pylint classes/
+          pylint run.py
       - name: Test with unittest
         run: |
           echo "And this is where I would put tests, if I had any"
