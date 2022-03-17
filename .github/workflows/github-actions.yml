@@ -1,0 +1,25 @@
+name: Python_CI
+
+on: [pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint with pylint
+        run: |
+          pylint .
+      - name: Test with unittest
+        run: |
+          echo "And this is where I would put tests, if I had any"
