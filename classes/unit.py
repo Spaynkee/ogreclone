@@ -19,11 +19,13 @@ class Unit():
             unit_chars (dict): A dictionary of characters in a unit. The key is the
                 position in the unit and the value is a Charcter object.
             unit_id (int): The unique ID of the unit.
+            targeting_mode (str): The targeting mode of the unit.
 
     """
     def __init__(self, leader, unit_id=0):
         self.unit_leader = leader
         self.unit_chars = {0: leader}
+        self.targeting_mode = "Strong" #other valus include Strong Weak Auto Leader
 
         for index in range(1,9):
             self.unit_chars[index] = None
@@ -148,13 +150,13 @@ class Unit():
                     char_index = pos
                     break
 
-        if char_index <= 2:
+        if 0 <= char_index <= 2:
             return 0
 
-        if char_index <= 5:
+        if 2 < char_index <= 5:
             return 1
 
-        if char_index <= 8:
+        if 5 < char_index <= 8:
             return 2
 
         return -1
@@ -193,3 +195,84 @@ class Unit():
                     return char
 
         return None
+
+    def move_character(self, char: object, old_pos: int, new_pos: int, temp: bool=False):
+        """ Moves a character within a unit. A character cannot move to an occupied space.
+            An empty space cannot be moved.
+
+            Args:
+                char (Character): The character object to be moved within the unit.
+                old_pos (int):    The current position of the character
+                new_pos (int):    The new position of the character
+                temp (bool):      Is the movement temporary (such as a crit)
+
+        """
+        if new_pos > 8 or new_pos < 0:
+            return
+
+        if self.unit_chars[old_pos] is None:
+            return
+
+        if self.unit_chars[new_pos] is not None:
+            return
+
+        if not temp:
+            char.base_position = new_pos
+
+        self.unit_chars[new_pos] = self.unit_chars[old_pos]
+        self.unit_chars[old_pos] = None
+
+    def get_character_position(self, char: object) -> int:
+        """ Gets a characters position within a unit.
+
+            Args:
+                char (Character): The character object to get the position of
+
+            Returns:
+                An integer with the position of the character in the unit.
+
+        """
+        return list(self.unit_chars.keys())[list(self.unit_chars.values()).index(char)]
+
+    def reset_character_positions(self):
+        """ Resets all characters of this unit back to their base positions.
+        """
+        for _, char in self.unit_chars.items():
+            if char is not None:
+                char_pos = self.get_character_position(char)
+                self.move_character(char, char_pos, char.base_position, temp=False)
+
+    def reset_has_performed_action_this_round(self):
+        """ Resets all this units characters has_performed_action_this_round flag
+        """
+        for _, char in self.unit_chars.items():
+            if char is not None:
+                char.has_performed_action_this_round = False
+
+    def determine_turn_order(self, row_index):
+        """ This function accepts a unit and a units_row and determines the order the characters
+            will act in.
+
+            Args:
+                unit:       A Unit object.
+                unit_row:   A row index for this unit
+
+            Returns:
+                a list of Character() objects in the order they should do their actions.
+
+            TODO:
+                This might need to be a Unit() function.
+
+        """
+        char_order = []
+
+        for col in range(0,3):
+            char = self.unit_chars[row_index*3+col]
+            if char is not None and char.is_alive is True:
+                char_order.append(char)
+            else:
+                continue
+
+        char_order.sort(key=lambda x: x.agility, reverse=True)
+
+        return char_order
