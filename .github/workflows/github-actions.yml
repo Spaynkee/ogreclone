@@ -4,9 +4,8 @@ on: [pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    strategy:
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -19,7 +18,8 @@ jobs:
           pip install -r requirements.txt
       - name: Lint with pylint
         run: |
-          pylint .
+          pylint classes/
+          pylint run.py
       - name: Test with unittest
         run: |
           echo "And this is where I would put tests, if I had any"
