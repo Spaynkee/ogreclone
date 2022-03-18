@@ -51,9 +51,9 @@ class Unit():
             return
 
         print(f"Adding {char.char_name} to unit {self.unit_id}")
-        self.unit_chars[position] = char
         char.unit_id = self.unit_id
         char.base_position = position
+        self.unit_chars[position] = char
 
     def get_char_and_char_id(self) -> dict:
         """ returns a dictionary of char ids and chars for this unit.
