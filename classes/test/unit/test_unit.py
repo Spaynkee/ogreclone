@@ -8,13 +8,12 @@
 	Don't forget -- Run this from the root folder and use the command
 	python -m unittest test.test_unit.py
 """
-
-import unittest
-from unittest.mock import Mock, MagicMock
-from classes.unit import Unit
-from classes.character import Character
-
+#pylint: disable=import-error # False positive.
 #pylint: disable=no-self-use # Gotta keep self for unittest
+import unittest
+from unittest.mock import Mock
+from classes.unit import Unit
+
 class TestUnitAddCharToUnit(unittest.TestCase):
     """ Contains all the test cases for get_first_blood_kill_assist().
     """

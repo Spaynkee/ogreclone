@@ -22,4 +22,4 @@ jobs:
           pylint run.py
       - name: Test with unittest
         run: |
-          python -m unittest classes.test.test_unit
+          python -m unittest classes.test.unit.test_unit
