@@ -32,8 +32,8 @@ def main():
 
     pol_unit.add_char_to_unit(fast_char, 2)
     dio_unit.add_char_to_unit(dio_clone_char, 2)
-    pol_unit.print_unit_map()
-    dio_unit.print_unit_map()
+    print(pol_unit.print_unit_map())
+    print(dio_unit.print_unit_map())
 
     print(pol_char)
 
@@ -51,7 +51,7 @@ def main():
             if unit_id not in game.units:
                 print("Unit id does not exist")
 
-            game.units[unit_id].print_unit_map()
+            print(game.units[unit_id].print_unit_map())
 
         elif choice == "3":
             start_battle(game, pol_unit, dio_unit)
