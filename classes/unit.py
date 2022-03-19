@@ -41,6 +41,11 @@ class Unit():
                 position (int): The position the character is being placed in.
 
         """
+
+        if position > 8 or position < 0:
+            print("position index out of range")
+            return
+
         if char.unit_id != -1:
             print(f"{char.char_name} is already in unit {char.unit_id}")
             return
@@ -55,31 +60,21 @@ class Unit():
         char.base_position = position
         self.unit_chars[position] = char
 
-    def get_char_and_char_id(self) -> dict:
-        """ returns a dictionary of char ids and chars for this unit.
-
-            Returns:
-                a dictionary like {char.char_id: char} that contains the chars in this unit.
-        """
-        char_ids = {}
-        for _, char in self.unit_chars.items():
-            if char is not None:
-                char_ids[char.char_id] = char
-
-        return char_ids
-
     def print_unit_map(self):
         """ Prints a map of the characters in this unit.
         """
-        print(f"\nUnit Map for unit: {self.unit_id}\n    Front")
+        unit_map = ""
+        unit_map = f"\nUnit Map for unit: {self.unit_id}\n    Front\n"
+
         for position, char in self.unit_chars.items():
             if position in (3,6):
-                print()
+                unit_map += "\n"
             if char is not None:
-                print(char.char_name, end=' ')
+                unit_map += f"{char.char_name} "
             else:
-                print("None", end=' ')
-        print("\n")
+                unit_map += "None "
+        unit_map += "\n"
+        return unit_map
 
     def is_any_char_alive(self):
         """ Determines if any character is alive in this unit.
