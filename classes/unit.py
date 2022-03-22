@@ -103,10 +103,11 @@ class Unit():
                 True: if there is at least one character that can still act during this battle.
                 False: if no characters can act based on total number of actions and round num.
         """
+        statuses = ['Paralyze', 'Sleep', 'Stone']
         for _, char in self.unit_chars.items():
             if char is not None:
                 if char.get_num_actions() >= round_number and char.is_alive is True:
-                    if char.status is None:
+                    if char.status not in statuses:
                         return True
 
         return False
