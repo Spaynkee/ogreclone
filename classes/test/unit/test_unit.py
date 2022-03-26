@@ -332,9 +332,6 @@ class TestUnitIsAnyCharAlive(unittest.TestCase):
 
 class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
     """ Tests Unit.can_any_character_take_action_in_battle()
-        status
-        round_number
-        mock get_num_actions()?
     """
 
     def test_can_any_character_take_action_in_battle_true(self):
@@ -576,6 +573,414 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
         self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+
+class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
+    """ Tests Unit.can_any_character_take_action_in_round()
+    """
+
+    def test_can_any_character_take_action_in_rounde_true(self):
+        """ Create a unit with a single character with no status that can take an action.
+            Assert the function returns True.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.get_num_actions.return_value = 2
+        leader.has_performed_action_this_round = False
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_false(self):
+        """ Create a unit with a single character with no status that has already taken an action.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.get_num_actions.return_value = 2
+        leader.has_performed_action_this_round = True
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_actions_equals_round_number(self):
+        """ Create a unit with a single character with no status whos num_actions = round number
+            Assert the function returns True.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.get_num_actions.return_value = 2
+        leader.has_performed_action_this_round = False
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_battle_with_round_status_false(self):
+        """ Create a unit with a single character with an action and a status of Sleep.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = 'Sleep'
+        leader.get_num_actions.return_value = 2
+        leader.has_performed_action_this_round = False
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_with_stone_status_false(self):
+        """ Create a unit with a single character with a status of Stone.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = 'Stone'
+        leader.get_num_actions.return_value = 2
+        leader.has_performed_action_this_round = False
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_with_poison_status_has_not_acted_true(self):
+        """ Create a unit with a single character with available actions and a status of poison.
+            Assert the function returns True.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = 'Poison'
+        leader.has_performed_action_this_round = False
+        leader.get_num_actions.return_value = 2
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_with_poison_status_no_action_false(self):
+        """ Create a unit with a single character with no actions and a status of poison.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = 'Poison'
+        leader.has_performed_action_this_round = False
+        leader.get_num_actions.return_value = 1
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_with_poison_status_has_acted_false(self):
+        """ Create a unit with a single character that has acted and a has status of poison.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = 'Poison'
+        leader.has_performed_action_this_round = True
+        leader.get_num_actions.return_value = 2
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_true(self):
+        """ Create a unit with multiple characters with no status that can take an action.
+            Assert the function returns True.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = False
+
+        leader.get_num_actions.return_value = 2
+        second_char.get_num_actions.return_value = 2
+        round_number = 1
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_no_action_false(self):
+        """ Create a unit with multiple characters with no status that cannot take an action.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = False
+
+        leader.get_num_actions.return_value = 1
+        second_char.get_num_actions.return_value = 1
+        round_number = 3
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_has_acted_false(self):
+        """ Create a unit with multiple characters with no status that have actions but also have
+            acted this round.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = True
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = True
+
+        leader.get_num_actions.return_value = 3
+        second_char.get_num_actions.return_value = 3
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_mixed_true(self):
+        """ Create a unit with multiple characters with no status where one character can act and
+            has not acted this round.
+            Assert the function returns True.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = True
+
+        leader.get_num_actions.return_value = 2
+        second_char.get_num_actions.return_value = 1
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_mixed_has_acted_false(self):
+        """ Create a unit with multiple characters with no status where one character can act and
+            has acted this round.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = True
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = True
+
+        leader.get_num_actions.return_value = 2
+        second_char.get_num_actions.return_value = 1
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_mixed_dead(self):
+        """ Create a unit with multiple characters with no status where one character can act,
+            and has not acted this round but that character is dead.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = False
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = True
+
+        leader.get_num_actions.return_value = 2
+        second_char.get_num_actions.return_value = 1
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_round_multiple_chars_mixed_status(self):
+        """ Create a unit with multiple characters with no status where one character can act, but
+            that character has a status
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = "Sleep"
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = True
+
+        leader.get_num_actions.return_value = 2
+        second_char.get_num_actions.return_value = 1
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+
+    def test_can_any_character_take_action_in_battle_multiple_chars_mixed_all_dead(self):
+        """ Create a unit with multiple characters with no status where all characters can act, but
+            they're all dead.
+            Assert the function returns False.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = False
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = False
+        second_char.status = None
+        second_char.has_performed_action_this_round = False
+
+        leader.get_num_actions.return_value = 2
+        second_char.get_num_actions.return_value = 2
+        round_number = 2
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+
+class TestUnitWhichRowCanGo(unittest.TestCase):
+    """ Tests Unit.which_row_can_go()
+    """
+
+    def test_which_row_can_go_first_row_only(self):
+        """ Create a unit with a character on row 0 that can act.
+            Assert the function returns 0.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        unit = Unit(leader, test_unit_id)
+        self.assertEqual(unit.which_row_can_go(), 0)
+
+    def test_which_row_can_go_first_row_multiple_rows(self):
+        """ Create a unit with multiple characters on rows 0, 1 that can act.
+            Assert the function returns 0.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = False
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = False
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[4] = second_char
+        self.assertEqual(unit.which_row_can_go(), 0)
+
+    def test_which_row_can_go_second_row_multiple_rows(self):
+        """ Create a unit with multiple characters on rows 0, 1 but only row 1 can go.
+            Assert the function returns 1.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = True
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = False
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[4] = second_char
+        self.assertEqual(unit.which_row_can_go(), 1)
+
+    def test_which_row_can_go_no_rows_multiple_rows(self):
+        """ Create a unit with multiple characters on rows 0, 1 but no row can go.
+            Assert the function returns -1.
+        """
+
+        test_unit_id = 7
+        leader = Mock()
+        leader.is_alive = True
+        leader.status = None
+        leader.has_performed_action_this_round = True
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.status = None
+        second_char.has_performed_action_this_round = True
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[4] = second_char
+        self.assertEqual(unit.which_row_can_go(), -1)
 
 if __name__ == "__main__":
     unittest.main()
