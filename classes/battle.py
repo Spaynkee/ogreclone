@@ -168,9 +168,10 @@ class Battle():
             characters can take an action, or until all the characters in a unit are dead.
 
         """
+        self.round = 1
         while not self.is_battle_finished():
 
-            print(f"Round: {self.round+1}")
+            print(f"Round: {self.round}")
             while not self.is_round_finished():
                 row_index_for_unit_close, row_index_for_unit_far = self.available_rows()
 

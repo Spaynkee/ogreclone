@@ -24,8 +24,8 @@ class Character():
 
         TODO:
             Add more stats -  int, wis, const, alignment
-            has_performed_action_this_round seems kinda weird. Does it belong elsewhere?
             add props for base stats so those can change during battle?
+            add a can_char_act() function that looks at status, is_alive, has performed_action etc.
 
     """
 
