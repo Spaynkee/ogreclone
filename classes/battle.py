@@ -3,18 +3,22 @@
 This object represents a single battle between two units.
 
 """
+
 import time
-class Battle():
-    """ Contains all the properties and methods used in a battle object.
-        Attributes:
-            game (Game): The current state of the game.
-            unit_close (Unit): the 'home' unit. 'players' unit. This is a Unit object.
-            unit_far (Unit): the enemy unit.  This is a Unit object.
-            units (List): A list containing both units for easy looping.
-            round (int): An integer denoting the current round of combat.
+
+
+class Battle:
+    """Contains all the properties and methods used in a battle object.
+    Attributes:
+        game (Game): The current state of the game.
+        unit_close (Unit): the 'home' unit. 'players' unit. This is a Unit object.
+        unit_far (Unit): the enemy unit.  This is a Unit object.
+        units (List): A list containing both units for easy looping.
+        round (int): An integer denoting the current round of combat.
 
     """
-    no_turn = ['Para', 'Sleep', 'Stone'] # Which statuses prevent an action?
+
+    no_turn = ["Para", "Sleep", "Stone"]  # Which statuses prevent an action?
 
     def __init__(self, game, unit_1, unit_2):
         self.unit_close = unit_1
@@ -24,11 +28,11 @@ class Battle():
         self.round = 0
 
     def is_battle_finished(self):
-        """ Determines if the battle is finished.
+        """Determines if the battle is finished.
 
-            Returns:
-                True if either unit is defeated
-                false if either unit has a character that can act
+        Returns:
+            True if either unit is defeated
+            false if either unit has a character that can act
 
         """
         if self.is_a_unit_defeated():
@@ -41,10 +45,10 @@ class Battle():
         return True
 
     def is_a_unit_defeated(self) -> bool:
-        """ Determines if either unit in this battle is defeated completely.
+        """Determines if either unit in this battle is defeated completely.
 
-            Returns:
-                True if either of our units has only dead characters.
+        Returns:
+            True if either of our units has only dead characters.
 
         """
         for unit in self.units:
@@ -53,12 +57,11 @@ class Battle():
 
         return False
 
-
     def is_round_finished(self):
-        """ Determines if both units have performed all possible actions this round.
+        """Determines if both units have performed all possible actions this round.
 
-            Returns:
-                True if a unit is defeated or false if either unit can still take an action.
+        Returns:
+            True if a unit is defeated or false if either unit can still take an action.
 
         """
         if self.is_a_unit_defeated():
@@ -76,13 +79,13 @@ class Battle():
 
     @staticmethod
     def take_action(actor, action, enemy, enemy_unit):
-        """ This function performs an action by an actor on an enemy.
+        """This function performs an action by an actor on an enemy.
 
-            Args:
-                actor (Character): The character peforming the action.
-                action (Action): The action being taken.
-                enemy (Character): The character receiving the action.
-                enemy_unit (Unit): The unit of the character receiving the action.
+        Args:
+            actor (Character): The character peforming the action.
+            action (Action): The action being taken.
+            enemy (Character): The character receiving the action.
+            enemy_unit (Unit): The unit of the character receiving the action.
 
         """
         # use stats from both characters to determine an outcome.
@@ -93,14 +96,16 @@ class Battle():
         if is_crit:
             damage = action.get_damage(actor, is_crit=True)
             enemy_pos = enemy_unit.get_character_position(enemy)
-            enemy_unit.move_character(enemy, enemy_pos, enemy_pos+3, temp=True)
+            enemy_unit.move_character(enemy, enemy_pos, enemy_pos + 3, temp=True)
         else:
             damage = action.get_damage(actor, is_crit=False)
 
         # determine if it's blocked.
         # damage = char.calculate_defense(damage) # reduces an attack by some amount.
         if is_crit:
-            print(f"{enemy.char_name} gets CRIT ON! {damage} damage from {actor.char_name}!")
+            print(
+                f"{enemy.char_name} gets CRIT ON! {damage} damage from {actor.char_name}!"
+            )
         else:
             print(f"{enemy.char_name} takes {damage} damage from {actor.char_name}!")
 
@@ -114,25 +119,27 @@ class Battle():
         print("\n")
 
     def available_rows(self):
-        """ Gets the first row with available actions for each function in this battle object.
+        """Gets the first row with available actions for each function in this battle object.
 
-            Returns:
-                The the first row indicies for each of the units involved in the battle, or -1 if
-                the unit does not have a row that can still take an action.
+        Returns:
+            The the first row indicies for each of the units involved in the battle, or -1 if
+            the unit does not have a row that can still take an action.
         """
         return self.unit_close.which_row_can_go(), self.unit_far.which_row_can_go()
 
-    def determine_turn_order_and_enemy_unit(self, row_index_for_unit_close, row_index_for_unit_far):
-        """ Determines the turn order, 'friendly' and 'enemy' units for a round of battle.
+    def determine_turn_order_and_enemy_unit(
+        self, row_index_for_unit_close, row_index_for_unit_far
+    ):
+        """Determines the turn order, 'friendly' and 'enemy' units for a round of battle.
 
-            Args:
-                row_index_for_unit_close (int): The first row that can go for the close unit
-                row_index_for_unit_far (int): The first row that can go for the far unit
+        Args:
+            row_index_for_unit_close (int): The first row that can go for the close unit
+            row_index_for_unit_far (int): The first row that can go for the far unit
 
-            Returns:
-                char_order: A list of characters in turn order
-                friendly_unit: The unit taking actions this round.
-                enemy_unit: The unit to be acted upon.
+        Returns:
+            char_order: A list of characters in turn order
+            friendly_unit: The unit taking actions this round.
+            enemy_unit: The unit to be acted upon.
         """
         if row_index_for_unit_close >= 0 and row_index_for_unit_far >= 0:
             agi_close = self.unit_close.get_agi_by_row(row_index_for_unit_close)
@@ -140,7 +147,9 @@ class Battle():
 
             # we call a function that determines turn order and 'friendly/enemy' unit.
             if agi_close > agi_far:
-                char_order = self.unit_close.determine_turn_order(row_index_for_unit_close)
+                char_order = self.unit_close.determine_turn_order(
+                    row_index_for_unit_close
+                )
                 enemy_unit = self.unit_far
             elif agi_close < agi_far:
                 char_order = self.unit_far.determine_turn_order(row_index_for_unit_far)
@@ -148,7 +157,9 @@ class Battle():
             elif agi_close == agi_far:
                 # coin flip for who goes.
                 # hard set to unit close for now.
-                char_order = self.unit_close.determine_turn_order(row_index_for_unit_close)
+                char_order = self.unit_close.determine_turn_order(
+                    row_index_for_unit_close
+                )
                 enemy_unit = self.unit_far
 
         # only one of the two units can go this turn, but which unit?
@@ -164,8 +175,8 @@ class Battle():
         return char_order, enemy_unit, friendly_unit
 
     def fight_it_out(self):
-        """ This function does the majority of the combat logic. Combat will continue until no
-            characters can take an action, or until all the characters in a unit are dead.
+        """This function does the majority of the combat logic. Combat will continue until no
+        characters can take an action, or until all the characters in a unit are dead.
 
         """
         self.round = 1
@@ -175,15 +186,18 @@ class Battle():
             while not self.is_round_finished():
                 row_index_for_unit_close, row_index_for_unit_far = self.available_rows()
 
-                char_order, enemy_unit, friendly_unit =\
-                        self.determine_turn_order_and_enemy_unit(\
-                        row_index_for_unit_close,\
-                        row_index_for_unit_far)
+                char_order, enemy_unit, friendly_unit = (
+                    self.determine_turn_order_and_enemy_unit(
+                        row_index_for_unit_close, row_index_for_unit_far
+                    )
+                )
 
                 # each character in this row takes their action
                 for char in char_order:
                     action = char.get_action_by_row()
-                    enemy = char.determine_target(enemy_unit, friendly_unit.targeting_mode, action)
+                    enemy = char.determine_target(
+                        enemy_unit, friendly_unit.targeting_mode, action
+                    )
 
                     print(f"{char.char_name} uses {action} on {enemy.char_name}!")
                     self.take_action(char, action, enemy, enemy_unit)

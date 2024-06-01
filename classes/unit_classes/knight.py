@@ -3,22 +3,25 @@
 contains all the info for the knight class.
 
 """
-#pylint: disable=relative-beyond-top-level # it's fine for now.
-#pylint: disable=too-few-public-methods # This is fine.
+
+# pylint: disable=relative-beyond-top-level # it's fine for now.
+# pylint: disable=too-few-public-methods # This is fine.
 from ..actions.slash_action import SlashAction
-class KnightClass():
-    """ Contains all the properties and methods of the Knight class
-        The knight is a fairly basic melee class with average and balanced stats.
 
-        Attributes:
-            class_id (int): The id associated with this class.
-            actions (dict): A dict containing the type of actions this char
-                will take. The key represents the row, so key=0 means in the front, the character
-                will take this action.
 
-            num_actions (dict): A dict containing the number of actions this character
-                will get. The key represents the row, so key=0 means in the front, the character
-                will take this many actions.
+class KnightClass:
+    """Contains all the properties and methods of the Knight class
+    The knight is a fairly basic melee class with average and balanced stats.
+
+    Attributes:
+        class_id (int): The id associated with this class.
+        actions (dict): A dict containing the type of actions this char
+            will take. The key represents the row, so key=0 means in the front, the character
+            will take this action.
+
+        num_actions (dict): A dict containing the number of actions this character
+            will get. The key represents the row, so key=0 means in the front, the character
+            will take this many actions.
 
     """
 

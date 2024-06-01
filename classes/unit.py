@@ -9,37 +9,40 @@ Front
 back
 
 """
-class Unit():
-    """ Contains all the properties and methods used in a Unit object.
-        A Unit is a collection of characters, with one character set as the leader of the group.
 
-        Attributes:
-            unit_leader (Character): the leader of the unit. If the leader dies, the unit cannot be
-                given orders.
-            unit_chars (dict): A dictionary of characters in a unit. The key is the
-                position in the unit and the value is a Charcter object.
-            unit_id (int): The unique ID of the unit.
-            targeting_mode (str): The targeting mode of the unit.
+
+class Unit:
+    """Contains all the properties and methods used in a Unit object.
+    A Unit is a collection of characters, with one character set as the leader of the group.
+
+    Attributes:
+        unit_leader (Character): the leader of the unit. If the leader dies, the unit cannot be
+            given orders.
+        unit_chars (dict): A dictionary of characters in a unit. The key is the
+            position in the unit and the value is a Charcter object.
+        unit_id (int): The unique ID of the unit.
+        targeting_mode (str): The targeting mode of the unit.
 
     """
+
     def __init__(self, leader, unit_id=0):
         self.unit_leader = leader
         self.unit_chars = {0: leader}
         leader.base_position = 0
-        self.targeting_mode = "Strong" #other valus include Strong Weak Auto Leader
+        self.targeting_mode = "Strong"  # other valus include Strong Weak Auto Leader
 
-        for index in range(1,9):
+        for index in range(1, 9):
             self.unit_chars[index] = None
 
         self.unit_id = unit_id
         leader.unit_id = self.unit_id
 
     def add_char_to_unit(self, char, position):
-        """ Adds a character to a unit in a position.
+        """Adds a character to a unit in a position.
 
-            Args:
-                char (Character): The character being added to this unit.
-                position (int): The position the character is being placed in.
+        Args:
+            char (Character): The character being added to this unit.
+            position (int): The position the character is being placed in.
 
         """
 
@@ -52,8 +55,10 @@ class Unit():
             return
 
         if self.unit_chars[position] is not None:
-            print(f"{self.unit_chars[position].char_name} already exists in position \
-                    {position}, cannot add")
+            print(
+                f"{self.unit_chars[position].char_name} already exists in position \
+                    {position}, cannot add"
+            )
             return
 
         print(f"Adding {char.char_name} to unit {self.unit_id}")
@@ -62,13 +67,12 @@ class Unit():
         self.unit_chars[position] = char
 
     def print_unit_map(self):
-        """ Prints a map of the characters in this unit.
-        """
+        """Prints a map of the characters in this unit."""
         unit_map = ""
         unit_map = f"\nUnit Map for unit: {self.unit_id}\n    Front\n"
 
         for position, char in self.unit_chars.items():
-            if position in (3,6):
+            if position in (3, 6):
                 unit_map += "\n"
             if char is not None:
                 unit_map += f"{char.char_name} "
@@ -78,11 +82,11 @@ class Unit():
         return unit_map
 
     def is_any_char_alive(self):
-        """ Determines if any character is alive in this unit.
+        """Determines if any character is alive in this unit.
 
-            Returns:
-                True if there is at least one character alive
-                False if no characters are alive.
+        Returns:
+            True if there is at least one character alive
+            False if no characters are alive.
         """
         for _, char in self.unit_chars.items():
             if char is not None:
@@ -93,18 +97,18 @@ class Unit():
         return False
 
     def can_any_character_take_action_in_battle(self, round_number) -> bool:
-        """ Determines if any character can take an action during this battle.
-            Uses the current round number and the units total number of actions
+        """Determines if any character can take an action during this battle.
+        Uses the current round number and the units total number of actions
 
-            Ex: if a unit can go 2 times max, but it's round 3, that character cannot act.
+        Ex: if a unit can go 2 times max, but it's round 3, that character cannot act.
 
-            Args:
-                round_number (int): The current round number for a battle.
-            Returns:
-                True: if there is at least one character that can still act during this battle.
-                False: if no characters can act based on total number of actions and round num.
+        Args:
+            round_number (int): The current round number for a battle.
+        Returns:
+            True: if there is at least one character that can still act during this battle.
+            False: if no characters can act based on total number of actions and round num.
         """
-        statuses = ['Paralyze', 'Sleep', 'Stone']
+        statuses = ["Paralyze", "Sleep", "Stone"]
         for _, char in self.unit_chars.items():
             if char is not None:
                 if char.get_num_actions() >= round_number and char.is_alive is True:
@@ -114,38 +118,43 @@ class Unit():
         return False
 
     def can_any_character_take_action_in_round(self, round_number) -> bool:
-        """ Determines if any character can take an action during this round.
+        """Determines if any character can take an action during this round.
 
-            Args:
-                round_number (int): The current round number for a battle.
-            Returns:
-                True: if the a character has available actions, and has not acted this round.
-                False: if no characters can act based on total number of actions, or if all chars
-                    have acted.
+        Args:
+            round_number (int): The current round number for a battle.
+        Returns:
+            True: if the a character has available actions, and has not acted this round.
+            False: if no characters can act based on total number of actions, or if all chars
+                have acted.
         """
-        statuses = ['Paralyze', 'Sleep', 'Stone']
+        statuses = ["Paralyze", "Sleep", "Stone"]
         for _, char in self.unit_chars.items():
             if char is not None:
-                if char.get_num_actions() >= round_number and \
-                        char.has_performed_action_this_round is False and \
-                        char.is_alive is True:
+                if (
+                    char.get_num_actions() >= round_number
+                    and char.has_performed_action_this_round is False
+                    and char.is_alive is True
+                ):
                     if char.status not in statuses:
                         return True
 
         return False
 
     def which_row_can_go(self) -> int:
-        """ Determines which row in this unit can act. The battle system uses rows to determine
-            turn order. If both units in battle have rows that can act, they must be compared
-            to figure out which row acts first.
+        """Determines which row in this unit can act. The battle system uses rows to determine
+        turn order. If both units in battle have rows that can act, they must be compared
+        to figure out which row acts first.
 
-            Returns:
-                An integer denoting the row index for the first row that can act
+        Returns:
+            An integer denoting the row index for the first row that can act
         """
         char_index = -1
         for pos, char in self.unit_chars.items():
             if char is not None:
-                if char.has_performed_action_this_round is False and char.is_alive is True:
+                if (
+                    char.has_performed_action_this_round is False
+                    and char.is_alive is True
+                ):
                     char_index = pos
                     break
 
@@ -161,19 +170,19 @@ class Unit():
         return -1
 
     def get_agi_by_row(self, row_index) -> float:
-        """ Gets the average agility of characters in a particiular row in a unit.
-            Used to determine turn order when both units have rows that can take action.
+        """Gets the average agility of characters in a particiular row in a unit.
+        Used to determine turn order when both units have rows that can take action.
 
-            Args:
-                row_index (int): the row in this unit we're getting the average agi for.
+        Args:
+            row_index (int): the row in this unit we're getting the average agi for.
 
-            Returns:
-                A number denoting a rows average agility.
+        Returns:
+            A number denoting a rows average agility.
         """
         row_agi = 0
         row_chars = 0
-        for col in range(0,3):
-            char = self.unit_chars[row_index*3+col]
+        for col in range(0, 3):
+            char = self.unit_chars[row_index * 3 + col]
             if char is not None:
                 row_chars += 1
                 row_agi += char.agility
@@ -184,16 +193,16 @@ class Unit():
         return row_agi / row_chars
 
     def get_first_non_dead_char_in_unit(self):
-        """ Temp function wrote for selecting the first non-dead char in  unit.
-            Currently used for determining target of actions, as I don't have target selection
-            written yet.
+        """Temp function wrote for selecting the first non-dead char in  unit.
+        Currently used for determining target of actions, as I don't have target selection
+        written yet.
 
-            TODO:
-                This function shouldn't exist, and thus, won't have tests written for it.
-                Remove as soon as you finish autonomous targeting.
+        TODO:
+            This function shouldn't exist, and thus, won't have tests written for it.
+            Remove as soon as you finish autonomous targeting.
 
-            Returns:
-                The first alive character in a unit based on unit position.
+        Returns:
+            The first alive character in a unit based on unit position.
         """
         for _, char in self.unit_chars.items():
             if char is not None:
@@ -203,10 +212,10 @@ class Unit():
         return None
 
     def move_character_temp(self, old_pos: int, new_pos: int):
-        """ Moves a character within a unit but does not update base_position.
-            Args:
-                old_pos (int):    The current position of the character
-                new_pos (int):    The new position of the character
+        """Moves a character within a unit but does not update base_position.
+        Args:
+            old_pos (int):    The current position of the character
+            new_pos (int):    The new position of the character
         """
         if new_pos > 8 or new_pos < 0:
             return
@@ -219,58 +228,54 @@ class Unit():
         self.unit_chars[new_pos] = self.unit_chars.pop(9)
 
     def move_character(self, char: object, old_pos: int, new_pos: int):
-        """ Moves a character within a unit and updates base position
-        """
+        """Moves a character within a unit and updates base position"""
         self.move_character_temp(old_pos, new_pos)
         char.base_position = new_pos
 
         if self.unit_chars[old_pos]:
             self.unit_chars[old_pos].base_position = old_pos
 
-
     def get_character_position(self, char: object) -> int:
-        """ Gets a characters position within a unit.
+        """Gets a characters position within a unit.
 
-            Args:
-                char (Character): The character object to get the position of
+        Args:
+            char (Character): The character object to get the position of
 
-            Returns:
-                An integer with the position of the character in the unit.
+        Returns:
+            An integer with the position of the character in the unit.
 
         """
         return list(self.unit_chars.keys())[list(self.unit_chars.values()).index(char)]
 
     def reset_character_positions(self):
-        """ Resets all characters of this unit back to their base positions.
-        """
+        """Resets all characters of this unit back to their base positions."""
         for _, char in self.unit_chars.items():
             if char is not None:
                 char_pos = self.get_character_position(char)
                 self.move_character(char, char_pos, char.base_position)
 
     def reset_has_performed_action_this_round(self):
-        """ Resets all this units characters has_performed_action_this_round flag
-        """
+        """Resets all this units characters has_performed_action_this_round flag"""
         for _, char in self.unit_chars.items():
             if char is not None:
                 char.has_performed_action_this_round = False
 
     def determine_turn_order(self, row_index):
-        """ This function accepts a unit and a units_row and determines the order the characters
-            will act in.
+        """This function accepts a unit and a units_row and determines the order the characters
+        will act in.
 
-            Args:
-                unit:       A Unit object.
-                unit_row:   A row index for this unit
+        Args:
+            unit:       A Unit object.
+            unit_row:   A row index for this unit
 
-            Returns:
-                a list of Character() objects in the order they should do their actions.
+        Returns:
+            a list of Character() objects in the order they should do their actions.
 
         """
         char_order = []
 
-        for col in range(0,3):
-            char = self.unit_chars[row_index*3+col]
+        for col in range(0, 3):
+            char = self.unit_chars[row_index * 3 + col]
             if char is not None and char.is_alive is True:
                 char_order.append(char)
             else:

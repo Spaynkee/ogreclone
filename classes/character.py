@@ -4,28 +4,29 @@ This class represents a single character.
 
 """
 
-#pylint: disable=too-many-instance-attributes # this is okay.
-class Character():
-    """ Contains all the properties and functions used by a single individual character.
-        Attributes:
-            char_name (str): The name of the character.
-            char_id (int): The unique id of the character.
-            unit_id (int): The ID of the unit this character is in, or -1 for no unit.
-            max_health (int): The maximum health value for this character.
-            health (int): The current health of this character.
-            agility (int): The agility of this character. Determines order in battle.
-            strength (int): The strength of this character. Can determine char damage.
-            base_position (int): The position in the unit that this unit is placed in.
-            current_position (int): The current position this char is in. Can change during battle.
-            is_alive (bool): Is this character alive?
-            has_performed_action_this_round (bool): Has this char taken an action in a given round.
-            status (?): What status the character has.
-            char_class (obj): What class the character is. (knight, berserker, mage, etc)
 
-        TODO:
-            Add more stats -  int, wis, const, alignment
-            add props for base stats so those can change during battle?
-            add a can_char_act() function that looks at status, is_alive, has performed_action etc.
+# pylint: disable=too-many-instance-attributes # this is okay.
+class Character:
+    """Contains all the properties and functions used by a single individual character.
+    Attributes:
+        char_name (str): The name of the character.
+        char_id (int): The unique id of the character.
+        unit_id (int): The ID of the unit this character is in, or -1 for no unit.
+        max_health (int): The maximum health value for this character.
+        health (int): The current health of this character.
+        agility (int): The agility of this character. Determines order in battle.
+        strength (int): The strength of this character. Can determine char damage.
+        base_position (int): The position in the unit that this unit is placed in.
+        current_position (int): The current position this char is in. Can change during battle.
+        is_alive (bool): Is this character alive?
+        has_performed_action_this_round (bool): Has this char taken an action in a given round.
+        status (?): What status the character has.
+        char_class (obj): What class the character is. (knight, berserker, mage, etc)
+
+    TODO:
+        Add more stats -  int, wis, const, alignment
+        add props for base stats so those can change during battle?
+        add a can_char_act() function that looks at status, is_alive, has performed_action etc.
 
     """
 
@@ -35,9 +36,16 @@ Max HP: {self.max_health}\n\
 Current HP: {self.health}\n\
 Agi: {self.agility}\n"
 
-    #pylint: disable=too-many-arguments # this is fine.
-    def __init__(self, name: str, char_class, char_id: int, health: int = 0,\
-            agility: int = 0, strength: int = 0):
+    # pylint: disable=too-many-arguments # this is fine.
+    def __init__(
+        self,
+        name: str,
+        char_class,
+        char_id: int,
+        health: int = 0,
+        agility: int = 0,
+        strength: int = 0,
+    ):
         self.char_name = name
         self.char_id = char_id
         self.unit_id = -1
@@ -49,24 +57,26 @@ Agi: {self.agility}\n"
         self.current_position = 0
         self.is_alive = True
         self.has_performed_action_this_round = False
-        self.status = None # what var type should this be? I think string is probably fine?
+        self.status = (
+            None  # what var type should this be? I think string is probably fine?
+        )
         self.char_class = char_class
 
     def get_action_by_row(self):
-        """ Gets this characters action from their class using their current position.
+        """Gets this characters action from their class using their current position.
 
-            Returns:
-                the characters Action() for their row.
+        Returns:
+            the characters Action() for their row.
         """
 
         row = self.get_row_from_position()
         return self.char_class.actions[row]
 
     def get_row_from_position(self) -> int:
-        """ Gets this characters row by checking their current position.
+        """Gets this characters row by checking their current position.
 
-            Returns:
-                The index of the row this character is in. 0-2: 0, 3-5: 1 6-8: 2
+        Returns:
+            The index of the row this character is in. 0-2: 0, 3-5: 1 6-8: 2
 
         """
         if self.current_position <= 2:
@@ -77,12 +87,11 @@ Agi: {self.agility}\n"
 
         return 2
 
-
     def get_num_actions(self) -> int:
-        """ Gets this characters number of actions per round by checking their class.
+        """Gets this characters number of actions per round by checking their class.
 
-            Returns:
-                The number of actions this character should take in a battle.
+        Returns:
+            The number of actions this character should take in a battle.
 
         """
         row = self.get_row_from_position()
@@ -90,15 +99,15 @@ Agi: {self.agility}\n"
         return self.char_class.num_actions[row]
 
     def determine_target(self, enemy_unit, targeting_mode, action) -> object:
-        """ Get the target of this characters action given the enemy unit and the action to take.
+        """Get the target of this characters action given the enemy unit and the action to take.
 
-            Args:
-                enemy_unit (Unit): The enemy unit we're determing target from.
-                targeting_mode (str): The targeting mode for this unit.
-                action (Action): The action this character will take.
+        Args:
+            enemy_unit (Unit): The enemy unit we're determing target from.
+            targeting_mode (str): The targeting mode for this unit.
+            action (Action): The action this character will take.
 
-            Returns:
-                the enemy character we are to take an action against.
+        Returns:
+            the enemy character we are to take an action against.
         """
 
         # there is an issue where units can target chars in the back. even if they're melee.
@@ -154,20 +163,20 @@ Agi: {self.agility}\n"
 
     @staticmethod
     def add_enemies_to_targets(pos_list, targets, enemy_unit):
-        """ This function adds valid characters from an enemy unit to the list of potential targets
-            for a character.
-            Args:
-                pos_tuple (List[int]):
-                targets (list[Character]): A list of characters that can be targeted.
-                enemy_unit (Unit): The opposing unit that we're getting targets from.
+        """This function adds valid characters from an enemy unit to the list of potential targets
+        for a character.
+        Args:
+            pos_tuple (List[int]):
+            targets (list[Character]): A list of characters that can be targeted.
+            enemy_unit (Unit): The opposing unit that we're getting targets from.
 
-            Returns:
-                A list of Character objects that can be targets for a characters action.
+        Returns:
+            A list of Character objects that can be targets for a characters action.
 
-            TODO:
-                This will eventually need to handle attacks that prioritize the back row.
-                So I think it will have to return all potential targets, and we figure out how
-                to select one of those when we go to determine_target
+        TODO:
+            This will eventually need to handle attacks that prioritize the back row.
+            So I think it will have to return all potential targets, and we figure out how
+            to select one of those when we go to determine_target
         """
         for pos in pos_list:
             enemy_char = enemy_unit.unit_chars[pos]
@@ -178,11 +187,10 @@ Agi: {self.agility}\n"
         return targets
 
     def get_highest_expected_damage(self, targets, action):
-        """ Given a list of targets and an action, this function calculates the expected damage of
-            an action to each target, and returns the target that would should take the most damage
-            from the action.
-            This is used by the 'Auto' targetting mode.
+        """Given a list of targets and an action, this function calculates the expected damage of
+        an action to each target, and returns the target that would should take the most damage
+        from the action.
+        This is used by the 'Auto' targetting mode.
         """
 
         pass
-
