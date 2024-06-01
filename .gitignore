@@ -1,2 +1,3 @@
 *.swp
 *.cpython-310*
+*venv
