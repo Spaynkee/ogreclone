@@ -10,6 +10,7 @@
 """
 #pylint: disable=import-error # False positive.
 #pylint: disable=no-self-use # Gotta keep self for unittest
+#pylint: disable=too-many-lines # Should I consider separate test modules for every function?
 import unittest
 from unittest.mock import Mock
 from classes.unit import Unit
@@ -981,6 +982,217 @@ class TestUnitWhichRowCanGo(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[4] = second_char
         self.assertEqual(unit.which_row_can_go(), -1)
+
+class TestUnitGetAgiByRow(unittest.TestCase):
+    """ Contains all the test cases for Unit.get_agi_by_row().
+    """
+
+    def test_one_char(self):
+        """ Create a unit with one character and assert we return exactly his agility.
+        """
+        row_index = 0
+        test_unit_id = 0
+        leader = Mock()
+        leader.is_alive = True
+        leader.agility = 1
+
+        unit = Unit(leader, test_unit_id)
+
+        self.assertEqual(unit.get_agi_by_row(row_index), 1)
+
+    def test_three_char(self):
+        """ Create a unit with 3 characters and assert we return the average agility of the three
+            characters.
+        """
+        row_index = 0
+        test_unit_id = 0
+        leader = Mock()
+        leader.is_alive = True
+        leader.agility = 1
+
+        second_char = Mock()
+        second_char.is_alive = True
+        second_char.agility = 2
+
+        third_char = Mock()
+        third_char.is_alive = True
+        third_char.agility = 3
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[1] = second_char
+        unit.unit_chars[2] = third_char
+        self.assertEqual(unit.get_agi_by_row(row_index), 2)
+
+    def test_zero_char(self):
+        """ Pass a row index with no characters and ensure we return 0
+        """
+        row_index = 1
+        test_unit_id = 0
+        leader = Mock()
+        leader.is_alive = True
+        leader.agility = 1
+
+        unit = Unit(leader, test_unit_id)
+
+        self.assertEqual(unit.get_agi_by_row(row_index), 0)
+
+class TestUnitMoveCharacterTemp(unittest.TestCase):
+    """ Contains all the test cases for Unit.move_character_temp().
+    """
+
+    def test_move_character_temp(self):
+        """ Create a unit and move the leader from 0 to 1. Assert the character moved.
+        """
+        test_unit_id = 0
+        old_pos = 0
+        new_pos = 1
+        leader = Mock()
+
+        unit = Unit(leader, test_unit_id)
+
+        unit.move_character_temp(old_pos, new_pos)
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(unit.unit_chars[old_pos], None)
+        self.assertEqual(unit.unit_chars[new_pos], leader)
+
+    def test_move_character_space_occupied(self):
+        """ Creates a unit an a character. Adds the character to the unit, then swaps the leader
+            and the characters positions. Asserts characters positions are swapped.
+        """
+
+        test_unit_id = 0
+        old_pos = 0
+        new_pos = 1
+        leader = Mock()
+        second_char = Mock()
+
+        unit = Unit(leader, test_unit_id)
+        unit.unit_chars[new_pos] = second_char
+        second_char.base_position = new_pos
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(second_char.base_position, new_pos)
+        self.assertEqual(unit.unit_chars[old_pos], leader)
+        self.assertEqual(unit.unit_chars[new_pos], second_char)
+
+        unit.move_character_temp(old_pos, new_pos)
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(second_char.base_position, new_pos)
+        self.assertEqual(unit.unit_chars[old_pos], second_char)
+        self.assertEqual(unit.unit_chars[new_pos], leader)
+
+    def test_move_character_bad_new_position_high(self):
+        """ Tests that attempting to move a character to an index higher than 8 does nothing.
+        """
+        test_unit_id = 0
+        old_pos = 0
+        new_pos = 9
+        leader = Mock()
+
+        unit = Unit(leader, test_unit_id)
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(unit.unit_chars[old_pos], leader)
+
+        unit.move_character_temp(old_pos, new_pos)
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(unit.unit_chars[old_pos], leader)
+
+        self.assertNotEqual(leader.base_position, new_pos)
+        self.assertRaises(KeyError, lambda: unit.unit_chars[new_pos])
+
+    def test_move_character_bad_old_position_high(self):
+        """ Tests that attempting a character from an index higher than 8 does nothing.
+        """
+        test_unit_id = 0
+        base_pos = 0
+        old_pos = 9
+        new_pos = 1
+        leader = Mock()
+
+        unit = Unit(leader, test_unit_id)
+
+        self.assertEqual(leader.base_position, base_pos)
+        self.assertEqual(unit.unit_chars[base_pos], leader)
+
+        unit.move_character_temp(old_pos, new_pos)
+
+        self.assertEqual(leader.base_position, base_pos)
+        self.assertNotEqual(leader.base_position, new_pos)
+        self.assertRaises(KeyError, lambda: unit.unit_chars[old_pos])
+
+    def test_move_character_bad_old_position_low(self):
+        """ Tests that attempting a character from an index lower than 0 does nothing.
+        """
+        test_unit_id = 0
+        base_pos = 0
+        old_pos = -1
+        new_pos = 1
+        leader = Mock()
+
+        unit = Unit(leader, test_unit_id)
+
+        self.assertEqual(leader.base_position, base_pos)
+
+        unit.move_character_temp(old_pos, new_pos)
+
+        self.assertEqual(leader.base_position, base_pos)
+        self.assertNotEqual(leader.base_position, old_pos)
+        self.assertNotEqual(leader.base_position, new_pos)
+        self.assertRaises(KeyError, lambda: unit.unit_chars[old_pos])
+
+    def test_move_character_bad_new_position_low(self):
+        """ Tests that attempting to move a character to an index lower 0 does nothing.
+        """
+        test_unit_id = 0
+        old_pos = 0
+        new_pos = -1
+        leader = Mock()
+
+        unit = Unit(leader, test_unit_id)
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(unit.unit_chars[old_pos], leader)
+
+        unit.move_character_temp(old_pos, new_pos)
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(unit.unit_chars[old_pos], leader)
+
+        self.assertNotEqual(leader.base_position, new_pos)
+        self.assertRaises(KeyError, lambda: unit.unit_chars[new_pos])
+
+class TestUnitMoveCharacter(unittest.TestCase):
+    """ Contains all the test cases for Unit.move_character().
+    """
+
+    def test_move_character(self):
+        """ Creates a unit with a leader, and moves the leader. Asserts that the leaders
+            base_position isn't updated.
+        """
+        mock_move_character_temp = Mock()
+
+        test_unit_id = 0
+        old_pos = 0
+        new_pos = 1
+        leader = Mock()
+
+        unit = Unit(leader, test_unit_id)
+        unit.move_character_temp = mock_move_character_temp
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertEqual(unit.unit_chars[old_pos], leader)
+
+        unit.move_character(leader, old_pos, new_pos)
+        mock_move_character_temp.assert_called_once()
+
+        self.assertEqual(leader.base_position, old_pos)
+        self.assertNotEqual(leader.base_position, new_pos)
+        mock_move_character_temp.reset_mock()
+
 
 if __name__ == "__main__":
     unittest.main()

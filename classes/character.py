@@ -89,11 +89,12 @@ Agi: {self.agility}\n"
 
         return self.char_class.num_actions[row]
 
-    def determine_target(self, enemy_unit, targeting_mode) -> object:
+    def determine_target(self, enemy_unit, targeting_mode, action) -> object:
         """ Get the target of this characters action given the enemy unit and the action to take.
 
             Args:
                 enemy_unit (Unit): The enemy unit we're determing target from.
+                targeting_mode (str): The targeting mode for this unit.
                 action (Action): The action this character will take.
 
             Returns:
@@ -144,8 +145,9 @@ Agi: {self.agility}\n"
             return targets[0]
 
         if targeting_mode == "Auto":
-            # this will eventually be based on a chars right, left, and middle attack scores?
-            # not really sure how those are calc'd.
+            # this will end up checking which of the enemy targets will take the most expected
+            # damage from the attack, and choosing them.
+            # return self.get_highest_expected_damage(targets, action)
             return enemy_unit.get_first_non_dead_char_in_unit()
 
         return enemy_unit.get_first_non_dead_char_in_unit()
@@ -160,7 +162,7 @@ Agi: {self.agility}\n"
                 enemy_unit (Unit): The opposing unit that we're getting targets from.
 
             Returns:
-                A list of potential targets for a characters action.
+                A list of Character objects that can be targets for a characters action.
 
             TODO:
                 This will eventually need to handle attacks that prioritize the back row.
@@ -174,3 +176,13 @@ Agi: {self.agility}\n"
                 return targets
 
         return targets
+
+    def get_highest_expected_damage(self, targets, action):
+        """ Given a list of targets and an action, this function calculates the expected damage of
+            an action to each target, and returns the target that would should take the most damage
+            from the action.
+            This is used by the 'Auto' targetting mode.
+        """
+
+        pass
+

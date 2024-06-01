@@ -23,10 +23,10 @@ def main():
     dio_clone_char = game.create_character("Clone", KnightClass(), agility=1, strength=5, health=10)
 
     pol_unit = game.create_unit(pol_char)
-    pol_unit.move_character(pol_char, 0, 1, temp=False)
+    pol_unit.move_character(pol_char, 0, 1)
 
     dio_unit = game.create_unit(dio_char)
-    dio_unit.move_character(dio_char, 0,7, temp=False)
+    dio_unit.move_character(dio_char, 0,7)
 
     print("\nadding chars to unit")
 

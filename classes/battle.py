@@ -183,7 +183,7 @@ class Battle():
                 # each character in this row takes their action
                 for char in char_order:
                     action = char.get_action_by_row()
-                    enemy = char.determine_target(enemy_unit, friendly_unit.targeting_mode)
+                    enemy = char.determine_target(enemy_unit, friendly_unit.targeting_mode, action)
 
                     print(f"{char.char_name} uses {action} on {enemy.char_name}!")
                     self.take_action(char, action, enemy, enemy_unit)

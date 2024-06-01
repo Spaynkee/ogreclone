@@ -25,6 +25,7 @@ class Unit():
     def __init__(self, leader, unit_id=0):
         self.unit_leader = leader
         self.unit_chars = {0: leader}
+        leader.base_position = 0
         self.targeting_mode = "Strong" #other valus include Strong Weak Auto Leader
 
         for index in range(1,9):
@@ -177,12 +178,19 @@ class Unit():
                 row_chars += 1
                 row_agi += char.agility
 
+        if row_chars == 0:
+            return 0
+
         return row_agi / row_chars
 
     def get_first_non_dead_char_in_unit(self):
         """ Temp function wrote for selecting the first non-dead char in  unit.
             Currently used for determining target of actions, as I don't have target selection
             written yet.
+
+            TODO:
+                This function shouldn't exist, and thus, won't have tests written for it.
+                Remove as soon as you finish autonomous targeting.
 
             Returns:
                 The first alive character in a unit based on unit position.
@@ -194,31 +202,31 @@ class Unit():
 
         return None
 
-    def move_character(self, char: object, old_pos: int, new_pos: int, temp: bool=False):
-        """ Moves a character within a unit. A character cannot move to an occupied space.
-            An empty space cannot be moved.
-
+    def move_character_temp(self, old_pos: int, new_pos: int):
+        """ Moves a character within a unit but does not update base_position.
             Args:
-                char (Character): The character object to be moved within the unit.
                 old_pos (int):    The current position of the character
                 new_pos (int):    The new position of the character
-                temp (bool):      Is the movement temporary (such as a crit)
-
         """
         if new_pos > 8 or new_pos < 0:
             return
 
-        if self.unit_chars[old_pos] is None:
+        if old_pos > 8 or old_pos < 0:
             return
 
-        if self.unit_chars[new_pos] is not None:
-            return
+        self.unit_chars[9] = self.unit_chars[old_pos]
+        self.unit_chars[old_pos] = self.unit_chars[new_pos]
+        self.unit_chars[new_pos] = self.unit_chars.pop(9)
 
-        if not temp:
-            char.base_position = new_pos
+    def move_character(self, char: object, old_pos: int, new_pos: int):
+        """ Moves a character within a unit and updates base position
+        """
+        self.move_character_temp(old_pos, new_pos)
+        char.base_position = new_pos
 
-        self.unit_chars[new_pos] = self.unit_chars[old_pos]
-        self.unit_chars[old_pos] = None
+        if self.unit_chars[old_pos]:
+            self.unit_chars[old_pos].base_position = old_pos
+
 
     def get_character_position(self, char: object) -> int:
         """ Gets a characters position within a unit.
@@ -238,7 +246,7 @@ class Unit():
         for _, char in self.unit_chars.items():
             if char is not None:
                 char_pos = self.get_character_position(char)
-                self.move_character(char, char_pos, char.base_position, temp=False)
+                self.move_character(char, char_pos, char.base_position)
 
     def reset_has_performed_action_this_round(self):
         """ Resets all this units characters has_performed_action_this_round flag
