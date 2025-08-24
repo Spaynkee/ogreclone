@@ -18,7 +18,7 @@ class Battle:
 
     """
 
-    no_turn = ["Para", "Sleep", "Stone"]  # Which statuses prevent an action?
+    skip_turn_statuses = ["Para", "Sleep", "Stone"]  # Which statuses prevent an action?
 
     def __init__(self, game, unit_1, unit_2):
         self.unit_close = unit_1
@@ -77,6 +77,8 @@ class Battle:
 
         return True
 
+    # TODO: Combat in general should probably return a list of combat steps indicating who did what
+    # and how it turned out.
     @staticmethod
     def take_action(actor, action, enemy, enemy_unit):
         """This function performs an action by an actor on an enemy.
@@ -94,14 +96,17 @@ class Battle:
         # check for a crit
         is_crit = action.determine_crit(actor)
         if is_crit:
-            damage = action.get_damage(actor, is_crit=True)
+            damage = action.get_damage(actor, enemy, is_crit=True)
             enemy_pos = enemy_unit.get_character_position(enemy)
-            enemy_unit.move_character(enemy, enemy_pos, enemy_pos + 3, temp=True)
+            enemy_unit.move_character_temp(enemy_pos, enemy_pos + 3)
         else:
-            damage = action.get_damage(actor, is_crit=False)
+            damage = action.get_damage(actor, enemy, is_crit=False)
 
-        # determine if it's blocked.
-        # damage = char.calculate_defense(damage) # reduces an attack by some amount.
+        # Rudamentary defense values.
+        damage = max(
+            damage - enemy.vitality, 1
+        )  # 0 damage seems kinda insane, lets cap at 1.
+
         if is_crit:
             print(
                 f"{enemy.char_name} gets CRIT ON! {damage} damage from {actor.char_name}!"
@@ -195,6 +200,7 @@ class Battle:
                 # each character in this row takes their action
                 for char in char_order:
                     action = char.get_action_by_row()
+
                     enemy = char.determine_target(
                         enemy_unit, friendly_unit.targeting_mode, action
                     )
@@ -205,13 +211,18 @@ class Battle:
                 time.sleep(2)
 
             self.round += 1
+            # Print the current status of the map?
+            print("                              BATTLE               \n")
+            self.unit_far.print_unit_status(mirrored=True)
+            print("\n                                VS.")
+            self.unit_close.print_unit_status()
 
-            # reset  has_acted for all chars.
+            # reset has_acted for all chars.
             for unit in [self.unit_far, self.unit_close]:
                 unit.reset_has_performed_action_this_round()
 
         # reset statuses maybe
 
-        # reset position for all characters? selfs over I guess.
+        # reset position for all characters?
         for unit in [self.unit_far, self.unit_close]:
             unit.reset_character_positions()

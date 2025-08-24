@@ -32,7 +32,7 @@ class Game:
         pass
 
     @classmethod
-    def create_character(cls, name, char_class, agility, strength, health):
+    def create_character(cls, name, char_class, agility, strength, health, vitality):
         """Creates a character and adds the object to the games char dict."""
 
         cls.char_index += 1
@@ -43,6 +43,7 @@ class Game:
             agility=agility,
             strength=strength,
             health=health,
+            vitality=vitality,
         )
         return cls.chars[cls.char_index]
 

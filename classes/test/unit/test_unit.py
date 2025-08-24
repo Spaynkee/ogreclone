@@ -5,19 +5,17 @@
 	There is one class for every unit function, so new test cases should be added as functions
 	belonging to the classes in this file.
 
-	Don't forget -- Run this from the root folder and use the command
-	python -m unittest test.test_unit.py
 """
 
 # pylint: disable=import-error # False positive.
 # pylint: disable=no-self-use # Gotta keep self for unittest
 # pylint: disable=too-many-lines # Should I consider separate test modules for every function?
-import unittest
+import pytest
 from unittest.mock import Mock
 from classes.unit import Unit
 
 
-class TestUnitAddCharToUnit(unittest.TestCase):
+class TestUnitAddCharToUnit:
     """Contains all the test cases for Unit.add_character_to_unit()."""
 
     def test_char_added_successfully(self):
@@ -34,22 +32,22 @@ class TestUnitAddCharToUnit(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
 
         # the unit ids are different before the function is called.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
+        assert unit.unit_id != char.unit_id
 
         unit.add_char_to_unit(char, test_position)
 
         # the chars unit id is updated.
-        self.assertEqual(unit.unit_id, char.unit_id)
+        assert unit.unit_id == char.unit_id
 
         # the chars unit id is set to what we set the unit id to on creation.
-        self.assertEqual(test_unit_id, char.unit_id)
+        assert test_unit_id == char.unit_id
 
         # the characters base position is set.
-        self.assertEqual(char.base_position, test_position)
+        assert char.base_position == test_position
 
         # the character was added to the unit.
-        self.assertEqual(unit.unit_chars[test_position], char)
-        self.assertNotEqual(unit.unit_chars[test_position], None)
+        assert unit.unit_chars[test_position] == char
+        assert unit.unit_chars[test_position] != None
 
     def test_char_not_added_if_position_is_filled(self):
         """Attempts to add a character to a spot that already has a character in it,
@@ -69,22 +67,22 @@ class TestUnitAddCharToUnit(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
 
         # the unit ids are different before the function is called.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
+        assert unit.unit_id != char.unit_id
 
         # adding character to occupied spot.
         unit.add_char_to_unit(existing_char, test_position)
         unit.add_char_to_unit(char, test_position)
 
         # the chars unit id is not updated.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
-        self.assertEqual(-1, char.unit_id)
+        assert unit.unit_id != char.unit_id
+        assert -1 == char.unit_id
 
         # the characters base position is not set.
-        self.assertNotEqual(char.base_position, test_position)
-        self.assertEqual(char.base_position, -1)
+        assert char.base_position != test_position
+        assert char.base_position == -1
 
         # the character was not added to the unit.
-        self.assertNotEqual(unit.unit_chars[test_position], char)
+        assert unit.unit_chars[test_position] != char
 
     def test_char_not_added_if_char_already_in_a_unit(self):
         """Attempts to add a character that already is assigned to a unit
@@ -103,21 +101,21 @@ class TestUnitAddCharToUnit(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
 
         # the unit ids are different before the function is called.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
+        assert unit.unit_id != char.unit_id
 
         # adding character that belongs to another unit.
         unit.add_char_to_unit(char, test_position)
 
         # the chars unit id is not updated.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
-        self.assertEqual(existing_unit_id, char.unit_id)
+        assert unit.unit_id != char.unit_id
+        assert existing_unit_id == char.unit_id
 
         # the characters base position is not set.
-        self.assertNotEqual(char.base_position, test_position)
-        self.assertEqual(char.base_position, -1)
+        assert char.base_position != test_position
+        assert char.base_position == -1
 
         # the character was not added to the unit.
-        self.assertNotEqual(unit.unit_chars[test_position], char)
+        assert unit.unit_chars[test_position] != char
 
     def test_char_not_added_if_position_out_of_range_high(self):
         """Attempts to add a character to a position higher than 8
@@ -135,18 +133,18 @@ class TestUnitAddCharToUnit(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
 
         # the unit ids are different before the function is called.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
+        assert unit.unit_id != char.unit_id
 
         # adding character to a position thats out of range.
         unit.add_char_to_unit(char, test_position)
 
         # the chars unit id is not updated.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
-        self.assertEqual(-1, char.unit_id)
+        assert unit.unit_id != char.unit_id
+        assert -1 == char.unit_id
 
         # the characters base position is not set.
-        self.assertNotEqual(char.base_position, test_position)
-        self.assertEqual(char.base_position, -1)
+        assert char.base_position != test_position
+        assert char.base_position == -1
 
     def test_char_not_added_if_position_out_of_range_low(self):
         """Attempts to add a character to a position lower than 0
@@ -164,21 +162,21 @@ class TestUnitAddCharToUnit(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
 
         # the unit ids are different before the function is called.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
+        assert unit.unit_id != char.unit_id
 
         # adding character to a position thats out of range.
         unit.add_char_to_unit(char, test_position)
 
         # the chars unit id is not updated.
-        self.assertNotEqual(unit.unit_id, char.unit_id)
-        self.assertEqual(-1, char.unit_id)
+        assert unit.unit_id != char.unit_id
+        assert -1 == char.unit_id
 
         # the characters base position is not set.
-        self.assertNotEqual(char.base_position, test_position)
-        self.assertEqual(char.base_position, None)
+        assert char.base_position != test_position
+        assert char.base_position == None
 
 
-class TestUnitPrintUnitMap(unittest.TestCase):
+class TestUnitPrintUnitMap:
     """Tests Unit.print_unit_map()"""
 
     def test_print_unit_map_first_row(self):
@@ -210,7 +208,7 @@ class TestUnitPrintUnitMap(unittest.TestCase):
         )
         expected_map += "None None None \n"
         expected_map += "None None None \n"
-        self.assertEqual(unit_map, expected_map)
+        assert unit_map == expected_map
 
     def test_print_unit_map_one_char_each_row(self):
         """Populates the all three rows of a unit and prints the unit map.
@@ -239,7 +237,7 @@ class TestUnitPrintUnitMap(unittest.TestCase):
         expected_map += f"{first_char.char_name} None None \n"
         expected_map += f"{second_char.char_name} None None \n"
         expected_map += f"{third_char.char_name} None None \n"
-        self.assertEqual(unit_map, expected_map)
+        assert unit_map == expected_map
 
     def test_print_unit_map_first_and_last_positions(self):
         """Populates the first and last spots of the unit and asserts that the map is as expected"""
@@ -263,10 +261,10 @@ class TestUnitPrintUnitMap(unittest.TestCase):
         expected_map += f"{first_char.char_name} None None \n"
         expected_map += "None None None \n"
         expected_map += f"None None {second_char.char_name} \n"
-        self.assertEqual(unit_map, expected_map)
+        assert unit_map == expected_map
 
 
-class TestUnitIsAnyCharAlive(unittest.TestCase):
+class TestUnitIsAnyCharAlive:
     """Tests Unit.is_any_char_alive()"""
 
     def test_is_any_char_alive_true(self):
@@ -277,7 +275,7 @@ class TestUnitIsAnyCharAlive(unittest.TestCase):
         leader.is_alive = True
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.is_any_char_alive())
+        assert unit.is_any_char_alive()
 
     def test_is_any_char_alive_false(self):
         """Create a unit with one dead character and assert the function returns false."""
@@ -287,7 +285,7 @@ class TestUnitIsAnyCharAlive(unittest.TestCase):
         leader.is_alive = False
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.is_any_char_alive())
+        assert not unit.is_any_char_alive()
 
     def test_is_any_char_alive_mixed_characters(self):
         """Create a unit with one dead character, and one alive character,
@@ -302,7 +300,7 @@ class TestUnitIsAnyCharAlive(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[8] = second_char
-        self.assertTrue(unit.is_any_char_alive())
+        assert unit.is_any_char_alive()
 
     def test_is_any_char_alive_multiple_chars_alive(self):
         """Create a unit with multiple characters alive and assert the function returns true."""
@@ -315,7 +313,7 @@ class TestUnitIsAnyCharAlive(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[8] = second_char
-        self.assertTrue(unit.is_any_char_alive())
+        assert unit.is_any_char_alive()
 
     def test_is_any_char_alive_multiple_chars_dead(self):
         """Create a unit with multiple characters alive and assert the function returns true."""
@@ -328,10 +326,10 @@ class TestUnitIsAnyCharAlive(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[8] = second_char
-        self.assertFalse(unit.is_any_char_alive())
+        assert not unit.is_any_char_alive()
 
 
-class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
+class TestUnitCanAnyCharacterTakeActionInBattle:
     """Tests Unit.can_any_character_take_action_in_battle()"""
 
     def test_can_any_character_take_action_in_battle_true(self):
@@ -347,7 +345,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.can_any_character_take_action_in_battle(round_number))
+        assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_false(self):
         """Create a unit with a single character with no status that has no actions left.
@@ -362,7 +360,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 2
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_actions_equals_round_number(self):
         """Create a unit with a single character with no status whos num_actions = round number
@@ -377,7 +375,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 2
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.can_any_character_take_action_in_battle(round_number))
+        assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_sleep_status_false(self):
         """Create a unit with a single character with an action and a status of Sleep.
@@ -392,7 +390,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_stone_status_false(self):
         """Create a unit with a single character with a status of Stone.
@@ -407,7 +405,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_poison_status_true(self):
         """Create a unit with a single character with available actions and a status of poison.
@@ -422,7 +420,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.can_any_character_take_action_in_battle(round_number))
+        assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_poison_status_no_action_false(
         self,
@@ -439,7 +437,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
         round_number = 2
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_true(self):
         """Create a unit with multiple characters with no status that can take an action.
@@ -461,7 +459,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertTrue(unit.can_any_character_take_action_in_battle(round_number))
+        assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_false(self):
         """Create a unit with multiple characters with no status that cannot take an action.
@@ -483,7 +481,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_mixed_true(self):
         """Create a unit with multiple characters with no status where one character can act.
@@ -505,7 +503,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertTrue(unit.can_any_character_take_action_in_battle(round_number))
+        assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_mixed_dead(self):
         """Create a unit with multiple characters with no status where one character can act, but
@@ -528,7 +526,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_mixed_status(self):
         """Create a unit with multiple characters with no status where one character can act, but
@@ -551,7 +549,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_mixed_all_dead(
         self,
@@ -576,10 +574,10 @@ class TestUnitCanAnyCharacterTakeActionInBattle(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
 
-class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
+class TestUnitCanAnyCharacterTakeActionInRound:
     """Tests Unit.can_any_character_take_action_in_round()"""
 
     def test_can_any_character_take_action_in_rounde_true(self):
@@ -596,7 +594,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+        assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_false(self):
         """Create a unit with a single character with no status that has already taken an action.
@@ -612,7 +610,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_actions_equals_round_number(self):
         """Create a unit with a single character with no status whos num_actions = round number
@@ -628,7 +626,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 2
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+        assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_battle_with_round_status_false(self):
         """Create a unit with a single character with an action and a status of Sleep.
@@ -644,7 +642,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_stone_status_false(self):
         """Create a unit with a single character with a status of Stone.
@@ -660,7 +658,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_poison_status_has_not_acted_true(
         self,
@@ -678,7 +676,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+        assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_poison_status_no_action_false(
         self,
@@ -696,7 +694,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 2
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_poison_status_has_acted_false(
         self,
@@ -714,7 +712,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
         round_number = 1
 
         unit = Unit(leader, test_unit_id)
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_true(self):
         """Create a unit with multiple characters with no status that can take an action.
@@ -738,7 +736,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+        assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_no_action_false(
         self,
@@ -764,7 +762,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_has_acted_false(
         self,
@@ -791,7 +789,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_mixed_true(self):
         """Create a unit with multiple characters with no status where one character can act and
@@ -816,7 +814,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertTrue(unit.can_any_character_take_action_in_round(round_number))
+        assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_mixed_has_acted_false(
         self,
@@ -843,7 +841,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_mixed_dead(self):
         """Create a unit with multiple characters with no status where one character can act,
@@ -868,7 +866,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_mixed_status(self):
         """Create a unit with multiple characters with no status where one character can act, but
@@ -893,7 +891,7 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_round(round_number))
+        assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_mixed_all_dead(
         self,
@@ -920,10 +918,10 @@ class TestUnitCanAnyCharacterTakeActionInRound(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
-        self.assertFalse(unit.can_any_character_take_action_in_battle(round_number))
+        assert not unit.can_any_character_take_action_in_battle(round_number)
 
 
-class TestUnitWhichRowCanGo(unittest.TestCase):
+class TestUnitWhichRowCanGo:
     """Tests Unit.which_row_can_go()"""
 
     def test_which_row_can_go_first_row_only(self):
@@ -938,7 +936,7 @@ class TestUnitWhichRowCanGo(unittest.TestCase):
         leader.has_performed_action_this_round = False
 
         unit = Unit(leader, test_unit_id)
-        self.assertEqual(unit.which_row_can_go(), 0)
+        assert unit.which_row_can_go() == 0
 
     def test_which_row_can_go_first_row_multiple_rows(self):
         """Create a unit with multiple characters on rows 0, 1 that can act.
@@ -958,7 +956,7 @@ class TestUnitWhichRowCanGo(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[4] = second_char
-        self.assertEqual(unit.which_row_can_go(), 0)
+        assert unit.which_row_can_go() == 0
 
     def test_which_row_can_go_second_row_multiple_rows(self):
         """Create a unit with multiple characters on rows 0, 1 but only row 1 can go.
@@ -978,7 +976,7 @@ class TestUnitWhichRowCanGo(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[4] = second_char
-        self.assertEqual(unit.which_row_can_go(), 1)
+        assert unit.which_row_can_go() == 1
 
     def test_which_row_can_go_no_rows_multiple_rows(self):
         """Create a unit with multiple characters on rows 0, 1 but no row can go.
@@ -998,10 +996,10 @@ class TestUnitWhichRowCanGo(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[4] = second_char
-        self.assertEqual(unit.which_row_can_go(), -1)
+        assert unit.which_row_can_go() == -1
 
 
-class TestUnitGetAgiByRow(unittest.TestCase):
+class TestUnitGetAgiByRow:
     """Contains all the test cases for Unit.get_agi_by_row()."""
 
     def test_one_char(self):
@@ -1014,7 +1012,7 @@ class TestUnitGetAgiByRow(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
 
-        self.assertEqual(unit.get_agi_by_row(row_index), 1)
+        assert unit.get_agi_by_row(row_index) == 1
 
     def test_three_char(self):
         """Create a unit with 3 characters and assert we return the average agility of the three
@@ -1037,7 +1035,7 @@ class TestUnitGetAgiByRow(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
         unit.unit_chars[1] = second_char
         unit.unit_chars[2] = third_char
-        self.assertEqual(unit.get_agi_by_row(row_index), 2)
+        assert unit.get_agi_by_row(row_index) == 2
 
     def test_zero_char(self):
         """Pass a row index with no characters and ensure we return 0"""
@@ -1049,10 +1047,10 @@ class TestUnitGetAgiByRow(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
 
-        self.assertEqual(unit.get_agi_by_row(row_index), 0)
+        assert unit.get_agi_by_row(row_index) == 0
 
 
-class TestUnitMoveCharacterTemp(unittest.TestCase):
+class TestUnitMoveCharacterTemp:
     """Contains all the test cases for Unit.move_character_temp()."""
 
     def test_move_character_temp(self):
@@ -1066,9 +1064,9 @@ class TestUnitMoveCharacterTemp(unittest.TestCase):
 
         unit.move_character_temp(old_pos, new_pos)
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(unit.unit_chars[old_pos], None)
-        self.assertEqual(unit.unit_chars[new_pos], leader)
+        assert leader.base_position == old_pos
+        assert unit.unit_chars[old_pos] == None
+        assert unit.unit_chars[new_pos] == leader
 
     def test_move_character_space_occupied(self):
         """Creates a unit an a character. Adds the character to the unit, then swaps the leader
@@ -1085,17 +1083,17 @@ class TestUnitMoveCharacterTemp(unittest.TestCase):
         unit.unit_chars[new_pos] = second_char
         second_char.base_position = new_pos
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(second_char.base_position, new_pos)
-        self.assertEqual(unit.unit_chars[old_pos], leader)
-        self.assertEqual(unit.unit_chars[new_pos], second_char)
+        assert leader.base_position == old_pos
+        assert second_char.base_position == new_pos
+        assert unit.unit_chars[old_pos] == leader
+        assert unit.unit_chars[new_pos] == second_char
 
         unit.move_character_temp(old_pos, new_pos)
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(second_char.base_position, new_pos)
-        self.assertEqual(unit.unit_chars[old_pos], second_char)
-        self.assertEqual(unit.unit_chars[new_pos], leader)
+        assert leader.base_position == old_pos
+        assert second_char.base_position == new_pos
+        assert unit.unit_chars[old_pos] == second_char
+        assert unit.unit_chars[new_pos] == leader
 
     def test_move_character_bad_new_position_high(self):
         """Tests that attempting to move a character to an index higher than 8 does nothing."""
@@ -1106,16 +1104,17 @@ class TestUnitMoveCharacterTemp(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(unit.unit_chars[old_pos], leader)
+        assert leader.base_position == old_pos
+        assert unit.unit_chars[old_pos] == leader
 
         unit.move_character_temp(old_pos, new_pos)
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(unit.unit_chars[old_pos], leader)
+        assert leader.base_position == old_pos
+        assert unit.unit_chars[old_pos] == leader
 
-        self.assertNotEqual(leader.base_position, new_pos)
-        self.assertRaises(KeyError, lambda: unit.unit_chars[new_pos])
+        assert leader.base_position != new_pos
+        with pytest.raises(KeyError):
+            unit.unit_chars[new_pos]
 
     def test_move_character_bad_old_position_high(self):
         """Tests that attempting a character from an index higher than 8 does nothing."""
@@ -1127,14 +1126,15 @@ class TestUnitMoveCharacterTemp(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
 
-        self.assertEqual(leader.base_position, base_pos)
-        self.assertEqual(unit.unit_chars[base_pos], leader)
+        assert leader.base_position == base_pos
+        assert unit.unit_chars[base_pos] == leader
 
         unit.move_character_temp(old_pos, new_pos)
 
-        self.assertEqual(leader.base_position, base_pos)
-        self.assertNotEqual(leader.base_position, new_pos)
-        self.assertRaises(KeyError, lambda: unit.unit_chars[old_pos])
+        assert leader.base_position == base_pos
+        assert leader.base_position != new_pos
+        with pytest.raises(KeyError):
+            unit.unit_chars[old_pos]
 
     def test_move_character_bad_old_position_low(self):
         """Tests that attempting a character from an index lower than 0 does nothing."""
@@ -1146,14 +1146,15 @@ class TestUnitMoveCharacterTemp(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
 
-        self.assertEqual(leader.base_position, base_pos)
+        assert leader.base_position == base_pos
 
         unit.move_character_temp(old_pos, new_pos)
 
-        self.assertEqual(leader.base_position, base_pos)
-        self.assertNotEqual(leader.base_position, old_pos)
-        self.assertNotEqual(leader.base_position, new_pos)
-        self.assertRaises(KeyError, lambda: unit.unit_chars[old_pos])
+        assert leader.base_position == base_pos
+        assert leader.base_position != old_pos
+        assert leader.base_position != new_pos
+        with pytest.raises(KeyError):
+            unit.unit_chars[old_pos]
 
     def test_move_character_bad_new_position_low(self):
         """Tests that attempting to move a character to an index lower 0 does nothing."""
@@ -1164,19 +1165,20 @@ class TestUnitMoveCharacterTemp(unittest.TestCase):
 
         unit = Unit(leader, test_unit_id)
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(unit.unit_chars[old_pos], leader)
+        assert leader.base_position == old_pos
+        assert unit.unit_chars[old_pos] == leader
 
         unit.move_character_temp(old_pos, new_pos)
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(unit.unit_chars[old_pos], leader)
+        assert leader.base_position == old_pos
+        assert unit.unit_chars[old_pos] == leader
 
-        self.assertNotEqual(leader.base_position, new_pos)
-        self.assertRaises(KeyError, lambda: unit.unit_chars[new_pos])
+        assert leader.base_position != new_pos
+        with pytest.raises(KeyError):
+            unit.unit_chars[new_pos]
 
 
-class TestUnitMoveCharacter(unittest.TestCase):
+class TestUnitMoveCharacter:
     """Contains all the test cases for Unit.move_character()."""
 
     def test_move_character(self):
@@ -1193,16 +1195,15 @@ class TestUnitMoveCharacter(unittest.TestCase):
         unit = Unit(leader, test_unit_id)
         unit.move_character_temp = mock_move_character_temp
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertEqual(unit.unit_chars[old_pos], leader)
+        assert leader.base_position == old_pos
+        assert unit.unit_chars[old_pos] == leader
 
         unit.move_character(leader, old_pos, new_pos)
         mock_move_character_temp.assert_called_once()
 
-        self.assertEqual(leader.base_position, old_pos)
-        self.assertNotEqual(leader.base_position, new_pos)
+        assert leader.base_position == old_pos
+        assert leader.base_position != new_pos
         mock_move_character_temp.reset_mock()
 
 
-if __name__ == "__main__":
-    unittest.main()
+

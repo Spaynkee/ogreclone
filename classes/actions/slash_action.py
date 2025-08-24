@@ -32,8 +32,9 @@ class SlashAction:
         self.crit_rate = 0.1  # this may be a calculation based on dex at some point.
         self.can_crit = True
 
+    # This could be extended to allow other stats to determine damage and be put on the base action.
     @staticmethod
-    def get_damage(char, is_crit) -> int:
+    def get_damage(char, target, is_crit) -> int:
         """Calculates the damage of this action based on some stats.
 
         Args:
@@ -44,9 +45,9 @@ class SlashAction:
 
         """
         if is_crit:
-            return char.strength * 2
+            return max(char.strength * 2 - target.vitality, 1)
 
-        return char.strength
+        return max(char.strength - target.vitality, 1)
 
     def determine_crit(self, char) -> bool:
         """Determines if we got a crit or not.
@@ -56,8 +57,12 @@ class SlashAction:
 
         Returns:
             A boolean indicating if this action is a critical hit.
+
+        Example: 
+            A knight using slash and having an agility of 150
+            -> .1 + (150/1000) = .25
         """
-        char_crit_chance = self.crit_rate + char.agility / 100
+        char_crit_chance = self.crit_rate + (char.agility / 1000)
         crit_roll = random.random()
         if crit_roll <= char_crit_chance:
             return True

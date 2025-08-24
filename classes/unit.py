@@ -1,3 +1,5 @@
+from __future__ import annotations
+from classes.battle import Battle
 """ unit.py
 
 contains the class representing a unit. A unit consists of 9 tiles with a position assigned to each.
@@ -9,7 +11,6 @@ Front
 back
 
 """
-
 
 class Unit:
     """Contains all the properties and methods used in a Unit object.
@@ -25,11 +26,12 @@ class Unit:
 
     """
 
-    def __init__(self, leader, unit_id=0):
+    def __init__(self, leader: Character, unit_id: int = 0):
         self.unit_leader = leader
         self.unit_chars = {0: leader}
         leader.base_position = 0
-        self.targeting_mode = "Strong"  # other valus include Strong Weak Auto Leader
+        # self.targeting_mode = "Strong"  # other values include Strong Weak Auto Leader
+        self.targeting_mode = "Auto"  # other values include Strong Weak Auto Leader
 
         for index in range(1, 9):
             self.unit_chars[index] = None
@@ -37,7 +39,7 @@ class Unit:
         self.unit_id = unit_id
         leader.unit_id = self.unit_id
 
-    def add_char_to_unit(self, char, position):
+    def add_char_to_unit(self, char: Character, position: int):
         """Adds a character to a unit in a position.
 
         Args:
@@ -57,13 +59,14 @@ class Unit:
         if self.unit_chars[position] is not None:
             print(
                 f"{self.unit_chars[position].char_name} already exists in position \
-                    {position}, cannot add"
+{position}, cannot add"
             )
             return
 
         print(f"Adding {char.char_name} to unit {self.unit_id}")
         char.unit_id = self.unit_id
         char.base_position = position
+        char.current_position = position
         self.unit_chars[position] = char
 
     def print_unit_map(self):
@@ -81,6 +84,45 @@ class Unit:
         unit_map += "\n"
         return unit_map
 
+    # This doesn't really work when positions can change since this relys on unit_chars
+    # which isn't being updated right now I think.
+    def print_unit_status(self, mirrored=False):
+        """Prints a map of the characters in this unit with status info. Defense mirrors the map."""
+        bottom_line = (
+            "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+        )
+        unit_map = bottom_line
+        blank_line = (
+            f"|                    |                     |                    |\n"
+        )
+        unit_map += blank_line
+
+        chars = None
+        if not mirrored:
+            chars = self.unit_chars.items()
+        else:
+            chars = reversed(self.unit_chars.items())
+
+        for position, char in chars:
+            unit_map += "|"
+            if char is not None:
+                unit_map += f" {position}.  {char.char_name[:6]} {char.health}/{char.max_health}      "
+            else:
+                unit_map += f"    {position}.  None        "
+
+            if (mirrored and position in (3, 6)) or (
+                not mirrored and position in (5, 2)
+            ):
+                unit_map += "|\n"
+                unit_map += blank_line
+                unit_map += bottom_line
+                unit_map += blank_line
+
+        unit_map += "|\n"
+        unit_map += blank_line
+        unit_map += bottom_line
+        print(unit_map)
+
     def is_any_char_alive(self):
         """Determines if any character is alive in this unit.
 
@@ -96,7 +138,7 @@ class Unit:
         print(f"{self.unit_leader.char_name}'s unit is crushed!")
         return False
 
-    def can_any_character_take_action_in_battle(self, round_number) -> bool:
+    def can_any_character_take_action_in_battle(self, round_number: int) -> bool:
         """Determines if any character can take an action during this battle.
         Uses the current round number and the units total number of actions
 
@@ -108,16 +150,15 @@ class Unit:
             True: if there is at least one character that can still act during this battle.
             False: if no characters can act based on total number of actions and round num.
         """
-        statuses = ["Paralyze", "Sleep", "Stone"]
         for _, char in self.unit_chars.items():
             if char is not None:
                 if char.get_num_actions() >= round_number and char.is_alive is True:
-                    if char.status not in statuses:
+                    if char.status not in Battle.skip_turn_statuses:
                         return True
 
         return False
 
-    def can_any_character_take_action_in_round(self, round_number) -> bool:
+    def can_any_character_take_action_in_round(self, round_number: int) -> bool:
         """Determines if any character can take an action during this round.
 
         Args:
@@ -127,6 +168,7 @@ class Unit:
             False: if no characters can act based on total number of actions, or if all chars
                 have acted.
         """
+        # statuses will be handled better in the future.
         statuses = ["Paralyze", "Sleep", "Stone"]
         for _, char in self.unit_chars.items():
             if char is not None:
@@ -169,7 +211,7 @@ class Unit:
 
         return -1
 
-    def get_agi_by_row(self, row_index) -> float:
+    def get_agi_by_row(self, row_index: int) -> float:
         """Gets the average agility of characters in a particiular row in a unit.
         Used to determine turn order when both units have rows that can take action.
 
@@ -227,13 +269,21 @@ class Unit:
         self.unit_chars[old_pos] = self.unit_chars[new_pos]
         self.unit_chars[new_pos] = self.unit_chars.pop(9)
 
-    def move_character(self, char: object, old_pos: int, new_pos: int):
+        if self.unit_chars[old_pos]:
+            self.unit_chars[old_pos].current_position = old_pos
+
+        self.unit_chars[new_pos].current_position = new_pos
+
+    def move_character(self, char: Character, old_pos: int, new_pos: int):
         """Moves a character within a unit and updates base position"""
         self.move_character_temp(old_pos, new_pos)
         char.base_position = new_pos
+        char.current_position = new_pos
 
+        # We need to update the position of the swapped character as well.
         if self.unit_chars[old_pos]:
             self.unit_chars[old_pos].base_position = old_pos
+            self.unit_chars[old_pos].current_position = old_pos
 
     def get_character_position(self, char: object) -> int:
         """Gets a characters position within a unit.
@@ -284,3 +334,6 @@ class Unit:
         char_order.sort(key=lambda x: x.agility, reverse=True)
 
         return char_order
+
+    def get_character_at_position(self):
+        pass

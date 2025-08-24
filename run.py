@@ -20,25 +20,27 @@ def main():
 
     print("Creating some characters")
     pol_char = game.create_character(
-        "Pol", KnightClass(), agility=2, strength=10, health=100
+        "Pol", KnightClass(), agility=2, strength=10, health=100, vitality=0
     )
     fast_char = game.create_character(
-        "PolFast", KnightClass(), agility=4, strength=3, health=50
+        "PolFast", KnightClass(), agility=4, strength=3, health=50, vitality=0
     )
     dio_char = game.create_character(
-        "Dio", KnightClass(), agility=4, strength=5, health=100
+        "LowVit", KnightClass(), agility=4, strength=5, health=100, vitality=0
     )
     dio_clone_char = game.create_character(
-        "Clone", KnightClass(), agility=1, strength=5, health=10
+        "HighVit", KnightClass(), agility=1, strength=5, health=10, vitality=5
     )
 
     pol_unit = game.create_unit(pol_char)
+
     pol_unit.move_character(pol_char, 0, 1)
 
     dio_unit = game.create_unit(dio_char)
     dio_unit.move_character(dio_char, 0, 7)
 
     print("\nadding chars to unit")
+    print(pol_unit)
 
     pol_unit.add_char_to_unit(fast_char, 2)
     dio_unit.add_char_to_unit(dio_clone_char, 2)
