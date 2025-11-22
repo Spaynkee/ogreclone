@@ -1,15 +1,16 @@
-"""slash_action.py
+"""crush_action.py
 
-each one of these objects contains a collection of actions a unit can take?
+each one of these objects contains an action a unit can take?
 
 """
 
 from .base_melee_action import BaseMeleeAction
 
 
-class SlashAction(BaseMeleeAction):
-    """Contains all the properties and methods of a Slash action.
-    The slash action is a basic attacking action. Similar to Crush or Thrust.
+class CrushAction(BaseMeleeAction):
+    """Contains all the properties and methods of a crush action.
+    The crush action is a basic attacking action. Similar to Slash or Thrust
+    with a slight additional crit rate.
 
     Attributes:
         damage (int): An integer denoting the damage of the action.
@@ -23,4 +24,5 @@ class SlashAction(BaseMeleeAction):
 
     def __init__(self):
         super().__init__()
-        self.description = "Slash"
+        self.description = "crush"
+        self.crit_rate = 0.15

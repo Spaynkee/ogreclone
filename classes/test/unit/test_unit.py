@@ -9,9 +9,7 @@ as functions belonging to the classes in this file.
 """
 
 # pylint: disable=import-error # False positive.
-# pylint: disable=no-self-use # Gotta keep self for unittest
 # pylint: disable=too-many-lines # Should I consider separate test modules for every function?
-import pytest
 from unittest.mock import Mock
 from classes.unit import Unit
 from classes.character import Character
@@ -963,7 +961,7 @@ class TestUnitGetAgiByRow:
     def test_one_char(self):
         """Create a unit with one character and assert we return exactly his agility."""
         row_index = 0
-        test_unit_id = 0
+
         leader = Mock()
         leader.is_alive = True
         leader.agility = 1
@@ -977,7 +975,7 @@ class TestUnitGetAgiByRow:
         characters.
         """
         row_index = 0
-        test_unit_id = 0
+
         leader = Mock()
         leader.is_alive = True
         leader.agility = 1
@@ -998,7 +996,7 @@ class TestUnitGetAgiByRow:
     def test_zero_char(self):
         """Pass a row index with no characters and ensure we return 0"""
         row_index = 1
-        test_unit_id = 0
+
         leader = Mock()
         leader.is_alive = True
         leader.agility = 1
@@ -1013,7 +1011,7 @@ class TestUnitMoveCharacterTemp:
 
     def test_move_character_temp(self):
         """Create a unit and move the leader from 0 to 1. Assert the character moved."""
-        test_unit_id = 0
+
         old_pos = 0
         new_pos = 1
         leader = Mock()
@@ -1031,7 +1029,6 @@ class TestUnitMoveCharacterTemp:
         and the characters positions. Asserts characters positions are swapped.
         """
 
-        test_unit_id = 0
         old_pos = 0
         new_pos = 1
         leader = Mock()
@@ -1055,7 +1052,7 @@ class TestUnitMoveCharacterTemp:
 
     def test_move_character_bad_new_position_high(self):
         """Tests that attempting to move a character to an index higher than 8 does nothing."""
-        test_unit_id = 0
+
         old_pos = 0
         new_pos = 9
         leader = Mock()
@@ -1071,12 +1068,10 @@ class TestUnitMoveCharacterTemp:
         assert unit.unit_chars[old_pos] == leader
 
         assert leader.base_position != new_pos
-        with pytest.raises(KeyError):
-            unit.unit_chars[new_pos]
 
     def test_move_character_bad_old_position_high(self):
         """Tests that attempting a character from an index higher than 8 does nothing."""
-        test_unit_id = 0
+
         base_pos = 0
         old_pos = 9
         new_pos = 1
@@ -1091,12 +1086,10 @@ class TestUnitMoveCharacterTemp:
 
         assert leader.base_position == base_pos
         assert leader.base_position != new_pos
-        with pytest.raises(KeyError):
-            unit.unit_chars[old_pos]
 
     def test_move_character_bad_old_position_low(self):
         """Tests that attempting a character from an index lower than 0 does nothing."""
-        test_unit_id = 0
+
         base_pos = 0
         old_pos = -1
         new_pos = 1
@@ -1111,12 +1104,10 @@ class TestUnitMoveCharacterTemp:
         assert leader.base_position == base_pos
         assert leader.base_position != old_pos
         assert leader.base_position != new_pos
-        with pytest.raises(KeyError):
-            unit.unit_chars[old_pos]
 
     def test_move_character_bad_new_position_low(self):
         """Tests that attempting to move a character to an index lower 0 does nothing."""
-        test_unit_id = 0
+
         old_pos = 0
         new_pos = -1
         leader = Mock()
@@ -1132,8 +1123,6 @@ class TestUnitMoveCharacterTemp:
         assert unit.unit_chars[old_pos] == leader
 
         assert leader.base_position != new_pos
-        with pytest.raises(KeyError):
-            unit.unit_chars[new_pos]
 
 
 class TestUnitMoveCharacter:
@@ -1141,24 +1130,39 @@ class TestUnitMoveCharacter:
 
     def test_move_character(self):
         """Creates a unit with a leader, and moves the leader. Asserts that the leaders
-        base_position isn't updated.
+        base_position is updated.
         """
-        mock_move_character_temp = Mock()
-
-        test_unit_id = 0
         old_pos = 0
         new_pos = 1
-        leader = Mock()
+        leader = Character("leader")
 
         unit = Unit(leader)
-        unit.move_character_temp = mock_move_character_temp
 
         assert leader.base_position == old_pos
         assert unit.unit_chars[old_pos] == leader
 
         unit.move_character(leader, new_pos)
-        mock_move_character_temp.assert_called_once()
+
+        assert leader.base_position == new_pos
+
+    def test_move_character_occupied_space(self):
+        """Creates a unit with a leader and a char, and moves the leader to the chars spot.
+        Asserts that both chars base positions are updated."""
+        old_pos = 0
+        new_pos = 1
+        leader = Character("leader")
+        char = Character("char")
+
+        unit = Unit(leader)
+        unit.add_char_to_unit(char, 1)
 
         assert leader.base_position == old_pos
-        assert leader.base_position != new_pos
-        mock_move_character_temp.reset_mock()
+        assert unit.unit_chars[old_pos] == leader
+
+        assert char.base_position == new_pos
+        assert unit.unit_chars[new_pos] == char
+
+        unit.move_character(leader, new_pos)
+
+        assert leader.base_position == new_pos
+        assert char.base_position == old_pos

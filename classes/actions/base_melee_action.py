@@ -3,11 +3,8 @@
 import random
 
 
-# This may end up being an abstract class or something where we force the base actionms to overload everything
-class BaseAction:
-    """Contains all the properties and methods of a base action.
-
-    This will almost always be extended into either a melee, ranged, or spell action.
+class BaseMeleeAction:
+    """Contains all the properties and methods of a base melee action.
 
     Attributes:
         targets_back (bool): Does this action target the rear row of the unit?
@@ -21,8 +18,8 @@ class BaseAction:
 
     def __init__(self):
         self.targets_back = False
-        self.description = "Base action"
-        self.crit_rate = 0
+        self.description = "Base melee action"
+        self.crit_rate = 0.1
 
     @staticmethod
     def get_damage(char, target, is_crit) -> int:

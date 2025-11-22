@@ -61,6 +61,9 @@ Agi: {self.agility}\n"
         agility: int = 5,
         strength: int = 5,
         vitality: int = 5,
+        intelligence: int = 5,
+        wisdom: int = 5,
+        level: int = 1,
     ):
         self.char_name = name
         self.char_id = next(Character._id_gen)
@@ -69,6 +72,10 @@ Agi: {self.agility}\n"
         self.agility = agility
         self.strength = strength
         self.vitality = vitality
+        self.wisdom = wisdom
+        self.intelligence = intelligence
+        self.current_exp = 0
+        self.level = level
         self.base_position = 0
         self.current_position = 0
         self.is_alive = True
@@ -114,7 +121,6 @@ Agi: {self.agility}\n"
         Returns:
             The index of the row this character is in. 0-2: 0, 3-5: 1 6-8: 2
 
-        TODO: Consider what happens if an unplaced character's action is requested.
         """
         if self.current_position <= 2:
             return 0
@@ -135,7 +141,6 @@ Agi: {self.agility}\n"
 
         return self.char_class.num_actions[row]
 
-    # We should know the current action too?
     def determine_target(self, enemy_unit: Unit) -> object:
         """Get the target of this characters action given the enemy unit and the action to take.
 

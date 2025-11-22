@@ -260,6 +260,8 @@ class Unit:
 
     def move_character_temp(self, old_pos: int, new_pos: int):
         """Moves a character within a unit but does not update base_position.
+        If there's a character in the new spot, the chars positions are swapped.
+
         Args:
             old_pos (int):    The current position of the character
             new_pos (int):    The new position of the character
@@ -289,7 +291,6 @@ class Unit:
         # We need to update the position of the swapped character as well.
         if self.unit_chars[old_pos]:
             self.unit_chars[old_pos].base_position = old_pos
-            self.unit_chars[old_pos].current_position = old_pos
 
     def get_character_position(self, char: object) -> int:
         """Gets a characters position within a unit.

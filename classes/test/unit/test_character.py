@@ -1,28 +1,39 @@
-import pytest
 from classes.actions.slash_action import SlashAction
 from classes.character import Character
 from classes.unit_classes.knight import KnightClass
-from unittest.mock import Mock
 from classes.unit import Unit
 
 
 class TestCharacterGetActionByRow:
     """Contains all the test cases for Character.get_action_by_row()."""
 
+    def setup_method(self):
+        self.leader = Character("leader", KnightClass())
+        self.unit = Unit(self.leader)
+
+        self.middle = Character("middle", KnightClass())
+        self.back = Character("back", KnightClass())
+        self.unit.add_char_to_unit(self.middle, 4)
+        self.unit.add_char_to_unit(self.back, 7)
+
     def test_get_action_by_row_for_front_row(self):
-        character = Character("unit", KnightClass(), 1)
+        """Ensures we get the correct action"""
+        character = Character("unit", KnightClass())
         assert type(character.get_action_by_row()) == type(SlashAction())
 
     def test_get_action_by_row_for_middle_row(self):
-        character = Character("unit", KnightClass(), 1)
+        """Ensures we get the correct action"""
+        character = Character("unit", KnightClass())
         assert type(character.get_action_by_row()) == type(SlashAction())
 
     def test_get_action_by_row_for_back_row(self):
-        character = Character("unit", KnightClass(), 1)
+        """Ensures we get the correct action"""
+        character = Character("unit", KnightClass())
         assert type(character.get_action_by_row()) == type(SlashAction())
 
     def test_get_action_by_row_for_unplaced_character(self):
-        character = Character("unit", KnightClass(), 1)
+        """Ensures we get the correct action"""
+        character = Character("unit", KnightClass())
         character.current_position = -1
         assert type(character.get_action_by_row()) == type(SlashAction())
 
@@ -77,7 +88,7 @@ class TestCharacterGetNumActions:
 class TestCharacterDetermineTarget:
     """Contains all the test cases for Character.determine_target()"""
 
-    def setup_method(self, method):
+    def setup_method(self):
         # Create characters
         self.leader = Character("friendly_unit", KnightClass())
         self.enemy_leader = Character("enemy_unit", KnightClass(), 100, vitality=10)
@@ -90,6 +101,7 @@ class TestCharacterDetermineTarget:
         self.enemy_unit.add_char_to_unit(self.enemy_char, 2)
 
     def test_determine_target_autononous(self):
+        """Ensures auto targets whatever char will result in the most hp damage."""
         self.enemy_char.vitality = 2
         assert self.unit.targeting_mode == "Auto"
         target = self.unit.unit_leader.determine_target(
@@ -101,6 +113,7 @@ class TestCharacterDetermineTarget:
         assert target.char_id == self.enemy_char.char_id
 
     def test_determine_target_strong(self):
+        """Ensures strong targets the highest raw hp."""
         self.unit.targeting_mode = "Strong"
         target = self.unit.unit_leader.determine_target(
             self.enemy_unit,
@@ -111,6 +124,7 @@ class TestCharacterDetermineTarget:
         assert target.char_id == self.enemy_leader.char_id
 
     def test_determine_target_weak(self):
+        """Ensures weak targets the lowest raw hp."""
         self.unit.targeting_mode = "Weak"
         target = self.unit.unit_leader.determine_target(
             self.enemy_unit,
@@ -121,6 +135,7 @@ class TestCharacterDetermineTarget:
         assert target.char_id == self.enemy_char.char_id
 
     def test_determine_target_leader(self):
+        """Ensures leader targets the enemy units leader"""
         self.unit.targeting_mode = "Leader"
         target = self.unit.unit_leader.determine_target(
             self.enemy_unit,
@@ -130,6 +145,7 @@ class TestCharacterDetermineTarget:
         assert target.char_id == self.enemy_leader.char_id
 
     def test_determine_target_leader_not_visible(self):
+        """Ensures leader falls back to auto if the leader is not available."""
         self.enemy_unit.move_character(self.enemy_leader, 5)
         self.unit.targeting_mode = "Leader"
         target = self.unit.unit_leader.determine_target(
@@ -140,4 +156,4 @@ class TestCharacterDetermineTarget:
         assert target.char_id == self.enemy_char.char_id
 
     def test_determine_target_leader_back_row_ranged_attack(self):
-        pass
+        """Ensures we hit the leader with a ranged attack, even if they're behind another char."""
