@@ -84,7 +84,7 @@ class TestCharacterDetermineTarget:
         self.enemy_char = Character("enemy_char", KnightClass())
 
         # Create units
-        self.unit = Unit(self.leader, 0)
+        self.unit = Unit(self.leader)
         self.unit.move_character(self.leader, 1)
         self.enemy_unit = Unit(self.enemy_leader)
         self.enemy_unit.add_char_to_unit(self.enemy_char, 2)

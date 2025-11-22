@@ -25,14 +25,13 @@ class TestUnitAddCharToUnit:
         """Adds a character to a unit and ensures character was added and
         poisition/unit_id are set.
         """
-        test_unit_id = 6
         test_position = 8
 
         leader = Mock()
         char = Character("test", KnightClass)
         assert char.unit_id == -1  # this should be updated by the function.
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         # the unit ids are different before the function is called.
         assert unit.unit_id != char.unit_id
@@ -42,8 +41,8 @@ class TestUnitAddCharToUnit:
         # the chars unit id is updated.
         assert unit.unit_id == char.unit_id
 
-        # the chars unit id is set to what we set the unit id to on creation.
-        assert test_unit_id == char.unit_id
+        # the chars unit id is set
+        assert unit.unit_id == char.unit_id
 
         # the characters base position is set.
         assert char.base_position == test_position
@@ -56,7 +55,6 @@ class TestUnitAddCharToUnit:
         """Attempts to add a character to a spot that already has a character in it,
         so the add fails and nothing is updated.
         """
-        test_unit_id = 7
         test_position = 5
 
         leader = Mock()
@@ -67,7 +65,7 @@ class TestUnitAddCharToUnit:
         char.unit_id = -1
         char.base_position = -1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         # the unit ids are different before the function is called.
         assert unit.unit_id != char.unit_id
@@ -91,7 +89,6 @@ class TestUnitAddCharToUnit:
         """Attempts to add a character that already is assigned to a unit
         so the add fails and nothing is updated.
         """
-        test_unit_id = 7
         existing_unit_id = 3
         test_position = 3
 
@@ -101,7 +98,7 @@ class TestUnitAddCharToUnit:
         char.unit_id = existing_unit_id
         char.base_position = -1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         # the unit ids are different before the function is called.
         assert unit.unit_id != char.unit_id
@@ -124,7 +121,6 @@ class TestUnitAddCharToUnit:
         """Attempts to add a character to a position higher than 8
         so the add fails and nothing is updated.
         """
-        test_unit_id = 7
         test_position = 9
 
         leader = Mock()
@@ -133,7 +129,7 @@ class TestUnitAddCharToUnit:
         char.unit_id = -1
         char.base_position = -1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         # the unit ids are different before the function is called.
         assert unit.unit_id != char.unit_id
@@ -153,7 +149,7 @@ class TestUnitAddCharToUnit:
         """Attempts to add a character to a position lower than 0
         so the add fails and nothing is updated.
         """
-        test_unit_id = 7
+
         test_position = -1
 
         leader = Mock()
@@ -162,7 +158,7 @@ class TestUnitAddCharToUnit:
         char.unit_id = -1
         char.base_position = None
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         # the unit ids are different before the function is called.
         assert unit.unit_id != char.unit_id
@@ -186,7 +182,6 @@ class TestUnitPrintUnitMap:
         """Populates the entire first row of a unit and prints the unit map.
         Asserts that the map is as expected.
         """
-        test_unit_id = 7
 
         leader = Mock()
         first_char = Mock()
@@ -197,7 +192,7 @@ class TestUnitPrintUnitMap:
         second_char.char_name = "second"
         third_char.char_name = "third"
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         unit.unit_chars[0] = first_char
         unit.unit_chars[1] = second_char
@@ -217,7 +212,6 @@ class TestUnitPrintUnitMap:
         """Populates the all three rows of a unit and prints the unit map.
         Asserts that the map is as expected.
         """
-        test_unit_id = 7
 
         leader = Mock()
         first_char = Mock()
@@ -228,7 +222,7 @@ class TestUnitPrintUnitMap:
         second_char.char_name = "second"
         third_char.char_name = "third"
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         unit.unit_chars[0] = first_char
         unit.unit_chars[3] = second_char
@@ -244,7 +238,6 @@ class TestUnitPrintUnitMap:
 
     def test_print_unit_map_first_and_last_positions(self):
         """Populates the first and last spots of the unit and asserts that the map is as expected"""
-        test_unit_id = 7
 
         leader = Mock()
         first_char = Mock()
@@ -253,7 +246,7 @@ class TestUnitPrintUnitMap:
         first_char.char_name = "first"
         second_char.char_name = "second"
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         unit.unit_chars[0] = first_char
         unit.unit_chars[8] = second_char
@@ -273,21 +266,19 @@ class TestUnitIsAnyCharAlive:
     def test_is_any_char_alive_true(self):
         """Create a unit with one alive character and assert the function returns true."""
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.is_any_char_alive()
 
     def test_is_any_char_alive_false(self):
         """Create a unit with one dead character and assert the function returns false."""
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = False
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.is_any_char_alive()
 
     def test_is_any_char_alive_mixed_characters(self):
@@ -295,39 +286,36 @@ class TestUnitIsAnyCharAlive:
         and assert the function returns true.
         """
 
-        test_unit_id = 7
         leader = Mock()
         second_char = Mock()
         leader.is_alive = False
         second_char.is_alive = True
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[8] = second_char
         assert unit.is_any_char_alive()
 
     def test_is_any_char_alive_multiple_chars_alive(self):
         """Create a unit with multiple characters alive and assert the function returns true."""
 
-        test_unit_id = 7
         leader = Mock()
         second_char = Mock()
         leader.is_alive = True
         second_char.is_alive = True
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[8] = second_char
         assert unit.is_any_char_alive()
 
     def test_is_any_char_alive_multiple_chars_dead(self):
         """Create a unit with multiple characters alive and assert the function returns true."""
 
-        test_unit_id = 7
         leader = Mock()
         second_char = Mock()
         leader.is_alive = False
         second_char.is_alive = False
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[8] = second_char
         assert not unit.is_any_char_alive()
 
@@ -340,14 +328,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
         leader.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_false(self):
@@ -355,14 +342,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
         leader.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_actions_equals_round_number(self):
@@ -370,14 +356,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
         leader.get_num_actions.return_value = 2
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_sleep_status_false(self):
@@ -385,14 +370,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Sleep"
         leader.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_stone_status_false(self):
@@ -400,14 +384,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Stone"
         leader.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_poison_status_true(self):
@@ -415,14 +398,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Poison"
         leader.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_with_poison_status_no_action_false(
@@ -432,14 +414,13 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Poison"
         leader.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
     def test_can_any_character_take_action_in_battle_multiple_chars_true(self):
@@ -447,7 +428,6 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -460,7 +440,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         second_char.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert unit.can_any_character_take_action_in_battle(round_number)
 
@@ -469,7 +449,6 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -482,7 +461,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         second_char.get_num_actions.return_value = 1
         round_number = 3
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
@@ -491,7 +470,6 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -504,7 +482,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert unit.can_any_character_take_action_in_battle(round_number)
 
@@ -514,7 +492,6 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = False
         leader.status = None
@@ -527,7 +504,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
@@ -537,7 +514,6 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Sleep"
@@ -550,7 +526,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
@@ -562,7 +538,6 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = False
         leader.status = None
@@ -575,7 +550,7 @@ class TestUnitCanAnyCharacterTakeActionInBattle:
         second_char.get_num_actions.return_value = 2
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
@@ -588,7 +563,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -596,7 +570,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.has_performed_action_this_round = False
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_false(self):
@@ -604,7 +578,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -612,7 +585,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.has_performed_action_this_round = True
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_actions_equals_round_number(self):
@@ -620,7 +593,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -628,7 +600,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.has_performed_action_this_round = False
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_battle_with_round_status_false(self):
@@ -636,7 +608,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Sleep"
@@ -644,7 +615,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.has_performed_action_this_round = False
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_stone_status_false(self):
@@ -652,7 +623,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Stone"
@@ -660,7 +630,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.has_performed_action_this_round = False
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_poison_status_has_not_acted_true(
@@ -670,7 +640,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Poison"
@@ -678,7 +647,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_poison_status_no_action_false(
@@ -688,7 +657,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Poison"
@@ -696,7 +664,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_with_poison_status_has_acted_false(
@@ -706,7 +674,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Poison"
@@ -714,7 +681,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         leader.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert not unit.can_any_character_take_action_in_round(round_number)
 
     def test_can_any_character_take_action_in_round_multiple_chars_true(self):
@@ -722,7 +689,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -737,7 +703,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 2
         round_number = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert unit.can_any_character_take_action_in_round(round_number)
 
@@ -748,7 +714,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -763,7 +728,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 1
         round_number = 3
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_round(round_number)
 
@@ -775,7 +740,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -790,7 +754,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 3
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_round(round_number)
 
@@ -800,7 +764,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns True.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -815,7 +778,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert unit.can_any_character_take_action_in_round(round_number)
 
@@ -827,7 +790,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -842,7 +804,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_round(round_number)
 
@@ -852,7 +814,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = False
         leader.status = None
@@ -867,7 +828,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_round(round_number)
 
@@ -877,7 +838,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = "Sleep"
@@ -892,7 +852,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 1
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_round(round_number)
 
@@ -904,7 +864,6 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         Assert the function returns False.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = False
         leader.status = None
@@ -919,7 +878,7 @@ class TestUnitCanAnyCharacterTakeActionInRound:
         second_char.get_num_actions.return_value = 2
         round_number = 2
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         assert not unit.can_any_character_take_action_in_battle(round_number)
 
@@ -932,13 +891,12 @@ class TestUnitWhichRowCanGo:
         Assert the function returns 0.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
         leader.has_performed_action_this_round = False
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         assert unit.which_row_can_go() == 0
 
     def test_which_row_can_go_first_row_multiple_rows(self):
@@ -946,7 +904,6 @@ class TestUnitWhichRowCanGo:
         Assert the function returns 0.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -957,7 +914,7 @@ class TestUnitWhichRowCanGo:
         second_char.status = None
         second_char.has_performed_action_this_round = False
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[4] = second_char
         assert unit.which_row_can_go() == 0
 
@@ -966,7 +923,6 @@ class TestUnitWhichRowCanGo:
         Assert the function returns 1.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -977,7 +933,7 @@ class TestUnitWhichRowCanGo:
         second_char.status = None
         second_char.has_performed_action_this_round = False
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[4] = second_char
         assert unit.which_row_can_go() == 1
 
@@ -986,7 +942,6 @@ class TestUnitWhichRowCanGo:
         Assert the function returns -1.
         """
 
-        test_unit_id = 7
         leader = Mock()
         leader.is_alive = True
         leader.status = None
@@ -997,7 +952,7 @@ class TestUnitWhichRowCanGo:
         second_char.status = None
         second_char.has_performed_action_this_round = True
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[4] = second_char
         assert unit.which_row_can_go() == -1
 
@@ -1013,7 +968,7 @@ class TestUnitGetAgiByRow:
         leader.is_alive = True
         leader.agility = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         assert unit.get_agi_by_row(row_index) == 1
 
@@ -1035,7 +990,7 @@ class TestUnitGetAgiByRow:
         third_char.is_alive = True
         third_char.agility = 3
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[1] = second_char
         unit.unit_chars[2] = third_char
         assert unit.get_agi_by_row(row_index) == 2
@@ -1048,7 +1003,7 @@ class TestUnitGetAgiByRow:
         leader.is_alive = True
         leader.agility = 1
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         assert unit.get_agi_by_row(row_index) == 0
 
@@ -1063,7 +1018,7 @@ class TestUnitMoveCharacterTemp:
         new_pos = 1
         leader = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         unit.move_character_temp(old_pos, new_pos)
 
@@ -1082,7 +1037,7 @@ class TestUnitMoveCharacterTemp:
         leader = Mock()
         second_char = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.unit_chars[new_pos] = second_char
         second_char.base_position = new_pos
 
@@ -1105,7 +1060,7 @@ class TestUnitMoveCharacterTemp:
         new_pos = 9
         leader = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         assert leader.base_position == old_pos
         assert unit.unit_chars[old_pos] == leader
@@ -1127,7 +1082,7 @@ class TestUnitMoveCharacterTemp:
         new_pos = 1
         leader = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         assert leader.base_position == base_pos
         assert unit.unit_chars[base_pos] == leader
@@ -1147,7 +1102,7 @@ class TestUnitMoveCharacterTemp:
         new_pos = 1
         leader = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         assert leader.base_position == base_pos
 
@@ -1166,7 +1121,7 @@ class TestUnitMoveCharacterTemp:
         new_pos = -1
         leader = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
 
         assert leader.base_position == old_pos
         assert unit.unit_chars[old_pos] == leader
@@ -1195,7 +1150,7 @@ class TestUnitMoveCharacter:
         new_pos = 1
         leader = Mock()
 
-        unit = Unit(leader, test_unit_id)
+        unit = Unit(leader)
         unit.move_character_temp = mock_move_character_temp
 
         assert leader.base_position == old_pos
