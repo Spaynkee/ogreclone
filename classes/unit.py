@@ -1,5 +1,7 @@
 from __future__ import annotations
 from classes.battle import Battle
+import itertools
+
 """ unit.py
 
 contains the class representing a unit. A unit consists of 9 tiles with a position assigned to each.
@@ -11,6 +13,7 @@ Front
 back
 
 """
+
 
 class Unit:
     """Contains all the properties and methods used in a Unit object.
@@ -26,7 +29,9 @@ class Unit:
 
     """
 
-    def __init__(self, leader: Character, unit_id: int = 0):
+    _id_gen = itertools.count(0)
+
+    def __init__(self, leader: Character):
         self.unit_leader = leader
         self.unit_chars = {0: leader}
         leader.base_position = 0
@@ -36,8 +41,8 @@ class Unit:
         for index in range(1, 9):
             self.unit_chars[index] = None
 
-        self.unit_id = unit_id
-        leader.unit_id = self.unit_id
+        self.unit_id = next(Unit._id_gen)
+        leader.unit = self
 
     def add_char_to_unit(self, char: Character, position: int):
         """Adds a character to a unit in a position.
@@ -64,7 +69,7 @@ class Unit:
             return
 
         print(f"Adding {char.char_name} to unit {self.unit_id}")
-        char.unit_id = self.unit_id
+        char.unit = self
         char.base_position = position
         char.current_position = position
         self.unit_chars[position] = char
@@ -274,8 +279,9 @@ class Unit:
 
         self.unit_chars[new_pos].current_position = new_pos
 
-    def move_character(self, char: Character, old_pos: int, new_pos: int):
+    def move_character(self, char: Character, new_pos: int):
         """Moves a character within a unit and updates base position"""
+        old_pos = self.get_character_position(char)
         self.move_character_temp(old_pos, new_pos)
         char.base_position = new_pos
         char.current_position = new_pos
@@ -301,8 +307,7 @@ class Unit:
         """Resets all characters of this unit back to their base positions."""
         for _, char in self.unit_chars.items():
             if char is not None:
-                char_pos = self.get_character_position(char)
-                self.move_character(char, char_pos, char.base_position)
+                self.move_character(char, char.base_position)
 
     def reset_has_performed_action_this_round(self):
         """Resets all this units characters has_performed_action_this_round flag"""

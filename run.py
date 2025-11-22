@@ -1,4 +1,4 @@
-""" run.py
+"""run.py
 
 This is the main script for running the game.
 
@@ -34,10 +34,10 @@ def main():
 
     pol_unit = game.create_unit(pol_char)
 
-    pol_unit.move_character(pol_char, 0, 1)
+    pol_unit.move_character(pol_char, 1)
 
     dio_unit = game.create_unit(dio_char)
-    dio_unit.move_character(dio_char, 0, 7)
+    dio_unit.move_character(dio_char, 7)
 
     print("\nadding chars to unit")
     print(pol_unit)

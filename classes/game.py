@@ -1,4 +1,4 @@
-""" game.py
+"""game.py
 
 contains all the global information for the game, including units, chars and the like.
 
@@ -23,8 +23,6 @@ class Game:
 
     """
 
-    char_index = 0
-    unit_index = 0
     chars = {}
     units = {}
 
@@ -34,26 +32,24 @@ class Game:
     @classmethod
     def create_character(cls, name, char_class, agility, strength, health, vitality):
         """Creates a character and adds the object to the games char dict."""
-
-        cls.char_index += 1
-        cls.chars[cls.char_index] = Character(
+        char = Character(
             name,
             char_class,
-            cls.char_index,
             agility=agility,
             strength=strength,
             health=health,
             vitality=vitality,
         )
-        return cls.chars[cls.char_index]
+        cls.chars[char.char_id] = char
+        return cls.chars[char.char_id]
 
     @classmethod
     def create_unit(cls, leader_char):
-        """Creates a character and adds the object to the games char dict."""
+        """Creates a unit and adds the object to the games unit dict."""
 
-        cls.unit_index += 1
-        cls.units[cls.unit_index] = Unit(leader_char, cls.unit_index)
-        return cls.units[cls.unit_index]
+        unit = Unit(leader_char)
+        cls.units[unit.unit_id] = unit
+        return cls.units[unit.unit_id]
 
     @classmethod
     def get_unit_by_id(cls, unit_id):

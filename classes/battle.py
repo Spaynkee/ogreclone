@@ -1,4 +1,4 @@
-""" battle.py
+"""battle.py
 
 This object represents a single battle between two units.
 
@@ -52,8 +52,7 @@ class Battle:
 
         """
         for unit in self.units:
-            if unit.is_any_char_alive() is False:
-                return True
+            return not unit.is_any_char_alive()
 
         return False
 
@@ -67,13 +66,9 @@ class Battle:
         if self.is_a_unit_defeated():
             return True
 
-        can_unit_act = False
         for unit in self.units:
             if unit.can_any_character_take_action_in_round(self.round):
-                can_unit_act = True
-
-        if can_unit_act is True:
-            return False
+                return False
 
         return True
 
@@ -202,7 +197,7 @@ class Battle:
                     action = char.get_action_by_row()
 
                     enemy = char.determine_target(
-                        enemy_unit, friendly_unit.targeting_mode, action
+                        enemy_unit,
                     )
 
                     print(f"{char.char_name} uses {action} on {enemy.char_name}!")

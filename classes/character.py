@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """ character.py
 
 This class represents a single character.
@@ -8,7 +9,9 @@ This class represents a single character.
 # pylint: disable=too-many-instance-attributes # this is okay.
 from classes.actions.slash_action import SlashAction
 from classes.unit import Unit
+from classes.unit_classes.base_class import BaseClass
 import math
+import itertools
 from typing import List
 
 
@@ -40,6 +43,7 @@ class Character:
     """
 
     statuses = ["Paralyze", "Sleep", "Stone"]
+    _id_gen = itertools.count(0)
 
     def __str__(self):
         return f"{self.char_name}\n\
@@ -51,16 +55,15 @@ Agi: {self.agility}\n"
     def __init__(
         self,
         name: str,
-        char_class,
-        char_id: int,
-        health: int = 0,
-        agility: int = 0,
-        strength: int = 0,
-        vitality: int = 0,
+        char_class=BaseClass(),
+        # these values should be set using the classes formula, and there should be a level...
+        health: int = 10,
+        agility: int = 5,
+        strength: int = 5,
+        vitality: int = 5,
     ):
         self.char_name = name
-        self.char_id = char_id
-        self.unit_id = -1
+        self.char_id = next(Character._id_gen)
         self.max_health = health
         self.health = self.max_health
         self.agility = agility
@@ -74,6 +77,7 @@ Agi: {self.agility}\n"
             None  # what var type should this be? I think string is probably fine?
         )
         self.char_class = char_class
+        self.unit = None
 
     @property
     def is_left(self):
@@ -86,6 +90,13 @@ Agi: {self.agility}\n"
     @property
     def is_right(self):
         return self.current_position in (2, 5, 8)
+
+    @property
+    def unit_id(self):
+        if self.unit:
+            return self.unit.unit_id
+
+        return -1
 
     def get_action_by_row(self):
         """Gets this characters action from their class using their current position.
@@ -124,7 +135,8 @@ Agi: {self.agility}\n"
 
         return self.char_class.num_actions[row]
 
-    def determine_target(self, enemy_unit: Unit, targeting_mode, action) -> object:
+    # We should know the current action too?
+    def determine_target(self, enemy_unit: Unit) -> object:
         """Get the target of this characters action given the enemy unit and the action to take.
 
         Args:
@@ -136,6 +148,8 @@ Agi: {self.agility}\n"
             the enemy character we are to take an action against.
         """
 
+        targeting_mode = self.unit.targeting_mode
+        action = self.get_action_by_row()
         targets = self.determine_possible_targets(enemy_unit, action)
         return self.determine_target_based_on_mode(targeting_mode, targets, enemy_unit)
 
@@ -153,6 +167,7 @@ Agi: {self.agility}\n"
             targets.sort(key=lambda x: x.health, reverse=False)
             return targets[0]
 
+        # Fallthrough to auto.
         return self.get_highest_expected_damage(targets, self.get_action_by_row())
 
     def get_target_from_column(self, column: int, enemy_unit, targets_back: bool):
@@ -176,7 +191,10 @@ Agi: {self.agility}\n"
             if enemy_char is not None and enemy_char.is_alive:
                 return enemy_char
 
-    def determine_possible_targets(self, enemy_unit: Unit, action: SlashAction) -> List[Character]: 
+    # This should accept any action, not just slash...
+    def determine_possible_targets(
+        self, enemy_unit: Unit, action: SlashAction
+    ) -> List[Character]:
         targets = []
         targets.append(self.get_target_from_column(1, enemy_unit, action.targets_back))
         if self.is_center:

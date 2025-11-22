@@ -1,9 +1,10 @@
-""" test_unit.py
+"""test_unit.py
 
-	This test suite contains all currently written unit tests for the unit.py class.
+This test suite contains all currently written unit tests for the unit.py
+ class.
 
-	There is one class for every unit function, so new test cases should be added as functions
-	belonging to the classes in this file.
+There is one class for every unit function, so new test cases should be added
+as functions belonging to the classes in this file.
 
 """
 
@@ -13,6 +14,8 @@
 import pytest
 from unittest.mock import Mock
 from classes.unit import Unit
+from classes.character import Character
+from classes.unit_classes.knight import KnightClass
 
 
 class TestUnitAddCharToUnit:
@@ -26,8 +29,8 @@ class TestUnitAddCharToUnit:
         test_position = 8
 
         leader = Mock()
-        char = Mock()
-        char.unit_id = -1  # this should be updated by the function.
+        char = Character("test", KnightClass)
+        assert char.unit_id == -1  # this should be updated by the function.
 
         unit = Unit(leader, test_unit_id)
 
@@ -47,7 +50,7 @@ class TestUnitAddCharToUnit:
 
         # the character was added to the unit.
         assert unit.unit_chars[test_position] == char
-        assert unit.unit_chars[test_position] != None
+        assert unit.unit_chars[test_position] is not None
 
     def test_char_not_added_if_position_is_filled(self):
         """Attempts to add a character to a spot that already has a character in it,
@@ -173,7 +176,7 @@ class TestUnitAddCharToUnit:
 
         # the characters base position is not set.
         assert char.base_position != test_position
-        assert char.base_position == None
+        assert char.base_position is None
 
 
 class TestUnitPrintUnitMap:
@@ -1065,7 +1068,7 @@ class TestUnitMoveCharacterTemp:
         unit.move_character_temp(old_pos, new_pos)
 
         assert leader.base_position == old_pos
-        assert unit.unit_chars[old_pos] == None
+        assert unit.unit_chars[old_pos] is None
         assert unit.unit_chars[new_pos] == leader
 
     def test_move_character_space_occupied(self):
@@ -1198,12 +1201,9 @@ class TestUnitMoveCharacter:
         assert leader.base_position == old_pos
         assert unit.unit_chars[old_pos] == leader
 
-        unit.move_character(leader, old_pos, new_pos)
+        unit.move_character(leader, new_pos)
         mock_move_character_temp.assert_called_once()
 
         assert leader.base_position == old_pos
         assert leader.base_position != new_pos
         mock_move_character_temp.reset_mock()
-
-
-
