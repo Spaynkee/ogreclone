@@ -8,6 +8,7 @@ This class represents a single character.
 
 # pylint: disable=too-many-instance-attributes # this is okay.
 from classes.actions.slash_action import SlashAction
+from classes.actions.base_action import BaseAction
 from classes.unit import Unit
 from classes.unit_classes.base_class import BaseClass
 import math
@@ -46,10 +47,18 @@ class Character:
     _id_gen = itertools.count(0)
 
     def __str__(self):
-        return f"{self.char_name}\n\
-Max HP: {self.max_health}\n\
-Current HP: {self.health}\n\
-Agi: {self.agility}\n"
+        return (
+            f"{self.char_name}\n"
+            f"Class: {self.char_class.class_name}\n"
+            f"Level: {self.level}\n"
+            f"Max HP: {self.max_health}\n"
+            f"Current HP: {self.health}\n"
+            f"Strength: {self.strength}\n"
+            f"Agility: {self.agility}\n"
+            f"Vitality: {self.vitality}\n"
+            f"Intelligence: {self.intelligence}\n"
+            f"Wisdom: {self.wisdom}\n"
+        )
 
     # pylint: disable=too-many-arguments # this is fine.
     def __init__(
@@ -85,6 +94,8 @@ Agi: {self.agility}\n"
         )
         self.char_class = char_class
         self.unit = None
+        self.unearned_exp = 0
+        self.exp = 0
 
     @property
     def is_left(self):
@@ -198,7 +209,7 @@ Agi: {self.agility}\n"
 
     # This should accept any action, not just slash...
     def determine_possible_targets(
-        self, enemy_unit: Unit, action: SlashAction
+        self, enemy_unit: Unit, action: BaseAction
     ) -> List[Character]:
         targets = []
         targets.append(self.get_target_from_column(1, enemy_unit, action.targets_back))
@@ -277,9 +288,6 @@ Agi: {self.agility}\n"
         target_hp = math.inf
         for target in targets:
             expected_damage = action.get_damage(self, target, is_crit=False)
-            print(
-                f"**{self.char_name} should do {expected_damage} to {target.char_name}",
-            )
             if expected_damage > best_damage:
                 best_damage = expected_damage
                 best_target = target
@@ -292,16 +300,31 @@ Agi: {self.agility}\n"
                     target_hp = target.health
                     best_target = target
 
-        if best_target:
-            print(
-                f"**{best_target.char_name} is the target with a damage of {best_damage}\n"
-            )
-            return best_target
-
-        return None
+        return best_target
 
     def can_character_act(self, round_number):
         if self.get_num_actions() >= round_number and self.is_alive is True:
             if self.status not in self.statuses:
                 return True
         return False
+
+    def commit_unearned_exp(self):
+        self.exp += self.unearned_exp
+        if self.unearned_exp > 0:
+            print(
+                f"{self.char_name} has earned {self.unearned_exp} exp for a total of {self.exp}!\n"
+            )
+            self.unearned_exp = 0
+
+        if self.exp >= 100:
+            self.level += 1
+            self.exp = 0
+            print(f"{self.char_name} has reached level {self.level}!\n")
+            self.increase_attributes()
+
+    def increase_attributes(self):
+        stat_increases = self.char_class.stats_per_level
+        for stat, val in stat_increases.items():
+            previous_val = getattr(self, stat)
+            setattr(self, stat, previous_val + val)
+            print(f"{self.char_name}'s {stat}:  {previous_val} -> {previous_val + val}")

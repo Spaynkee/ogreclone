@@ -7,10 +7,10 @@ contains all the info for the berserker class.
 # pylint: disable=relative-beyond-top-level # it's fine for now.
 # pylint: disable=too-few-public-methods # This is fine.
 from ..actions.crush_action import CrushAction
-from base_class import BaseClass
+from .base_class import BaseClass
 
 
-class berserkerClass(BaseClass):
+class BerserkerClass(BaseClass):
     """Contains all the properties and methods of the berserker class
     The berserker is a melee class with slightly higher offence than defense..
 
@@ -30,9 +30,10 @@ class berserkerClass(BaseClass):
 
     def __init__(self):
         self.class_id = 2
+        self.class_name = "Berserker"
         self.actions = {0: CrushAction(), 1: CrushAction(), 2: CrushAction()}
         self.stats_per_level = {
-            "health": 15,
+            "max_health": 15,
             "agility": 3,
             "strength": 4,
             "vitality": 2,

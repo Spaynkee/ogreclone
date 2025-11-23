@@ -9,6 +9,7 @@ from classes.game import Game
 from classes.unit import Unit
 from classes.battle import Battle
 from classes.unit_classes.knight import KnightClass
+from classes.unit_classes.berserker import BerserkerClass
 
 
 def main():
@@ -23,13 +24,13 @@ def main():
         "Pol", KnightClass(), agility=2, strength=10, health=100, vitality=0
     )
     fast_char = game.create_character(
-        "PolFast", KnightClass(), agility=4, strength=3, health=50, vitality=0
+        "PolFast", KnightClass(), agility=4, strength=3, health=10, vitality=0
     )
     dio_char = game.create_character(
-        "LowVit", KnightClass(), agility=4, strength=5, health=100, vitality=0
+        "Dio", BerserkerClass(), agility=4, strength=5, health=100, vitality=0
     )
     dio_clone_char = game.create_character(
-        "HighVit", KnightClass(), agility=1, strength=5, health=10, vitality=5
+        "Dio's friend", KnightClass(), agility=1, strength=5, health=10, vitality=5
     )
 
     pol_unit = game.create_unit(pol_char)

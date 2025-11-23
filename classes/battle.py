@@ -26,6 +26,8 @@ class Battle:
         self.unit_far = unit_2
         self.units = [unit_1, unit_2]
         self.round = 0
+        self.exp_earned = 0
+        self.battle_record = []
 
     def is_battle_finished(self):
         """Determines if the battle is finished.
@@ -74,8 +76,7 @@ class Battle:
 
     # TODO: Combat in general should probably return a list of combat steps indicating who did what
     # and how it turned out.
-    @staticmethod
-    def take_action(actor, action, enemy, enemy_unit):
+    def take_action(self, actor, action, enemy, enemy_unit):
         """This function performs an action by an actor on an enemy.
 
         Args:
@@ -97,10 +98,7 @@ class Battle:
         else:
             damage = action.get_damage(actor, enemy, is_crit=False)
 
-        # Rudamentary defense values.
-        damage = max(
-            damage - enemy.vitality, 1
-        )  # 0 damage seems kinda insane, lets cap at 1.
+        damage = max(damage, 1)
 
         if is_crit:
             print(
@@ -111,9 +109,12 @@ class Battle:
 
         enemy.health -= damage
         print(f"{enemy.char_name}'s health is reduced to {enemy.health}!")
+
+        # Probably move this into a 'character_dies' function.
         if enemy.health <= 0:
             print(f"{enemy.char_name} dies!")
             enemy.is_alive = False
+            self.increase_unearned_exp_for_unit(actor.unit, enemy.level)
 
         actor.has_performed_action_this_round = True
         print("\n")
@@ -221,3 +222,21 @@ class Battle:
         # reset position for all characters?
         for unit in [self.unit_far, self.unit_close]:
             unit.reset_character_positions()
+            unit.award_exp()
+
+    def increase_unearned_exp_for_unit(self, unit, enemy_level):
+        """uses the dead characters level to determine exp rate."""
+        for char in unit.get_list_of_chars():
+            if not char.is_alive:
+                continue
+
+            level_difference = char.level - enemy_level
+            exp = 10
+            # exp = 100
+
+            if level_difference > 0:
+                exp = 10 * (enemy_level / char.level) ** 5.7
+            elif level_difference < 0:
+                exp = 10 * (enemy_level / char.level) ** 1.6
+
+            char.unearned_exp += exp

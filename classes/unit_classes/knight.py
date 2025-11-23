@@ -28,9 +28,10 @@ class KnightClass(BaseClass):
 
     def __init__(self):
         self.class_id = 1
+        self.class_name = "Knight"
         self.actions = {0: SlashAction(), 1: SlashAction(), 2: SlashAction()}
         self.stats_per_level = {
-            "health": 10,
+            "max_health": 10,
             "agility": 3,
             "strength": 3,
             "vitality": 3,

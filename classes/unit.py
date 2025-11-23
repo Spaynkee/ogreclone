@@ -343,3 +343,13 @@ class Unit:
 
     def get_character_at_position(self):
         pass
+
+    def get_list_of_chars(self):
+        """returns a list of chars for looping through"""
+        return [char for _, char in self.unit_chars.items() if char]
+
+    def award_exp(self):
+        for char in self.get_list_of_chars():
+            print(char)
+            if char:
+                char.commit_unearned_exp()
